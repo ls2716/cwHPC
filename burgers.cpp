@@ -1,12 +1,12 @@
 #include <chrono>
 
 #include "Model.h"
-#include "Burgers.h"
+//#include "Burgers.h"
 
 int main(int argc, char* argv[]) {
 
     Model m(argc, argv);
-    Burgers b(m);
+    //Burgers b(m);
 
     // Call code to initialise the problem here
 

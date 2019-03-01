@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1551447043 source:c:\users\lukasz\documents\studies\year3\cwhpc\model.cpp
+	"model.h"
+	<iostream>
+
+1551447016 c:\users\lukasz\documents\studies\year3\cwhpc\model.h
+
+1551447002 source:c:\users\lukasz\documents\studies\year3\cwhpc\tester\main.cpp
+	<chrono>
+	<iostream>
+	"../model.h"
+
