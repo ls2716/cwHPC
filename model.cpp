@@ -1,6 +1,5 @@
 #include "model.h"
 
-
 using namespace std;
 
 //Function to check validity
@@ -10,32 +9,32 @@ int Model::IsValid()
     //Time cannot be negative or too big
     if (T<0)
     {
-        cout << "Final time cannot be negative." << endl;
+        cout << "Error. Final time cannot be negative." << endl;
         return 1;
     }
     if (dt>0.02)
     {
-        cout << "Final time is too big for accuracy." << endl;
+        cout << "Warning. Final time is too big for accuracy." << endl;
         def = 2;
     }
     if (L<0)
     {
-        cout << "Domain length cannot be negative." << endl;
+        cout << "Error. Domain length cannot be negative." << endl;
         return 1;
     }
     if (dx>0.02)
     {
-        cout << "Domain is too big for accuracy." << endl;
+        cout << "Warning. Domain is too big for accuracy." << endl;
         def = 2;
     }
     if ((b<0)||(b>1.0))
     {
-        cout << "Value of b is strange." << endl;
+        cout << "Warning. Value of b is strange." << endl;
         def = 2;
     }
     if (c<0)
     {
-        cout << "c in negative - negative diffusion - instabilities!." << endl;
+        cout << "Warning. c in negative - negative diffusion - instabilities!." << endl;
         def = 2;
     }
     return def;
@@ -167,12 +166,13 @@ Model::Model(int argc, char* argv[])
         readSuccess = readInputFile(filename);
     else
     {
-        //From the command line
+        // or from the command line
         readInputCmd();
         readSuccess = true;
     }
     if (readSuccess)
         cout << "Parameters were read successfully." << endl << endl;
+
     //Filling the rest of the parameters
     cout << "Filling rest of the parameters" << endl << endl;
     ParameterFill();
@@ -196,7 +196,6 @@ Model::Model(int argc, char* argv[])
                         exit(EXIT_FAILURE);
                     break;
     }
-
 };
 
 Model::~Model() {};

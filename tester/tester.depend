@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1551653014 source:c:\users\lukasz\documents\studies\year3\cwhpc\model.cpp
+1551653707 source:c:\users\lukasz\documents\studies\year3\cwhpc\model.cpp
 	"model.h"
 
 1551651730 c:\users\lukasz\documents\studies\year3\cwhpc\model.h
@@ -8,8 +8,13 @@
 	<fstream>
 	<string>
 
-1551653018 source:c:\users\lukasz\documents\studies\year3\cwhpc\tester\main.cpp
+1551654676 source:c:\users\lukasz\documents\studies\year3\cwhpc\tester\main.cpp
 	<chrono>
 	<iostream>
 	"../model.h"
+	"../burgers.h"
+
+1551654673 c:\users\lukasz\documents\studies\year3\cwhpc\burgers.h
+	<cmath>
+	<iostream>
 

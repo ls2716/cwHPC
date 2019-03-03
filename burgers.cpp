@@ -1,24 +1,12 @@
-#include <chrono>
+#include "model.h"
+#include "burgers.h"
 
-#include "Model.h"
-//#include "Burgers.h"
+using namespace std;
 
-int main(int argc, char* argv[]) {
+Burgers::Burgers(Model& m)
+{
+    ax=m.GetAx();
+    cout << ax << endl;
+};
 
-    Model m(argc, argv);
-    //Burgers b(m);
-
-    // Call code to initialise the problem here
-
-    typedef std::chrono::high_resolution_clock hrc;
-    typedef std::chrono::milliseconds ms;
-    hrc::time_point start = hrc::now();
-
-    // Call code to perform time integration here
-
-    hrc::time_point end = hrc::now();
-
-    // Calculate final energy and write output
-
-    return 0;
-}
+Burgers::~Burgers(){};
