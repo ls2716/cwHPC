@@ -1,6 +1,9 @@
 #ifndef CLASS_MODEL
 #define CLASS_MODEL
-
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <string>
 //#include mpi.h
 
 class Model {
@@ -10,15 +13,16 @@ class Model {
 
         void PrintParameters();
 
-        bool IsValid();
+
+        int IsValid();
 
         //Getters
         bool   IsVerbose() const { return verbose; }
         bool   IsHelp()    const { return help; }
-        double GetX0()     const { return x0; }
-        double GetY0()     const { return y0; }
-        double GetLx()     const { return Lx; }
-        double GetLy()     const { return Ly; }
+//        double GetX0()     const { return x0; }
+//        double GetY0()     const { return y0; }
+//        double GetLx()     const { return Lx; }
+        double GetL()      const { return L; }
         double GetT()      const { return T; }
         int    GetNx()     const { return Nx; }
         int    GetNy()     const { return Ny; }
@@ -34,21 +38,22 @@ class Model {
         //Add any other getters here...
 
 
-        //Setters
-        void SetX0(double& x);
 
     private:
-		void ParseParameters(int argc, char argv[]);
-        void ValidateParameters();
 
-        bool verbose;
-        bool help;
+        //Input reader
+        bool readInputFile(std::string filename);
+        void readInputCmd();
+
+		//Check if parameters are valid
+        void ValidateParameters();
+        void ParameterFill();
+
+        bool verbose=false;
+        bool help=false;
 
         //Numerics
-		double x0;
-        double y0;
-        double Lx;
-        double Ly;
+        double L;
         double T;
         int    Nx;
         int    Ny;
@@ -62,6 +67,16 @@ class Model {
         double ay;
         double b;
         double c;
+
+//        //Bools to check if initialised
+//        bool isL=false;
+//        bool isT=false;
+//        bool isax=false;
+//        bool isay=false;
+//        bool isb=false;
+//        bool isc=false;
+
+
 
         //Add any additional parameters here...
 };

@@ -1,11 +1,14 @@
 # depslib dependency file v1.0
-1551447043 source:c:\users\lukasz\documents\studies\year3\cwhpc\model.cpp
+1551653014 source:c:\users\lukasz\documents\studies\year3\cwhpc\model.cpp
 	"model.h"
+
+1551651730 c:\users\lukasz\documents\studies\year3\cwhpc\model.h
 	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
 
-1551447016 c:\users\lukasz\documents\studies\year3\cwhpc\model.h
-
-1551447002 source:c:\users\lukasz\documents\studies\year3\cwhpc\tester\main.cpp
+1551653018 source:c:\users\lukasz\documents\studies\year3\cwhpc\tester\main.cpp
 	<chrono>
 	<iostream>
 	"../model.h"
