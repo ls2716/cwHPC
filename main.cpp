@@ -12,6 +12,9 @@ int main(int argc, char* argv[])
     Model m(argc, argv);
     m.PrintParameters();
     Burgers b(m);
-
+	b.Run();
+	double* ures = b.GetResU();
+	cout << ures[995+1100*m.GetNx()] << endl;
+	b.PrintGrid();
     return 0;
 }

@@ -3,14 +3,14 @@
 using namespace std;
 
 //Function to check validity
-int Model::IsValid()
+void Model::IsValid()
 {
     int def=0;
     //Time cannot be negative or too big
     if (T<0)
     {
         cout << "Error. Final time cannot be negative." << endl;
-        return 1;
+        def = 1;
     }
     if (dt>0.02)
     {
@@ -20,7 +20,7 @@ int Model::IsValid()
     if (L<0)
     {
         cout << "Error. Domain length cannot be negative." << endl;
-        return 1;
+        def = 1;
     }
     if (dx>0.02)
     {
@@ -37,7 +37,24 @@ int Model::IsValid()
         cout << "Warning. c in negative - negative diffusion - instabilities!." << endl;
         def = 2;
     }
-    return def;
+    
+	switch (def)
+    {
+        case 0:     cout << "Model is valid." << endl;
+                    break;
+        case 1:     cout << "Model is invalid." << endl;
+                    PrintParameters();
+                    exit(EXIT_FAILURE);
+                    break;
+        case 2:     cout << "Warning. Parameters could be invalid." << endl;
+                    PrintParameters();
+                    cout << "Do you want to continue [y/n] ?" << endl;
+                    char ans='n';
+                    cin >> ans;
+                    if (ans!='y')
+                        exit(EXIT_FAILURE);
+                    break;
+    }
 }
 
 //Filling missing model parameters
@@ -49,6 +66,16 @@ void Model::ParameterFill()
     dx=L/Nx;
     dy=L/Ny;
     dt=T/Nt;
+	if (small)
+	{
+		cout << "Small filling." <<endl;
+		Nx=11;
+		Ny=11;
+		Nt=4000;
+		dx=L/Nx;
+		dy=L/Ny;
+		dt=T/Nt;
+	}
 }
 
 //Printing parameters function
@@ -78,7 +105,7 @@ bool Model::readInputFile(string filename)
     if (inputfile.fail())
     {
         cout << "Couldn't read the input file." << endl;
-        cout << "Check if " << filename << "exists." << endl;
+        cout << "Check if '" << filename << "' exists." << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -132,13 +159,32 @@ void Model::readInputCmd()
     cin >> c;
 }
 
-
-Model::Model(int argc, char* argv[])
+void Model::readTest(char testname)
 {
-    // Looking for argument defining input parameters data
-    bool comm = true;
+	switch (testname)
+	{
+		case '1':	T=1;
+						L=10;
+						ax=0;
+						ay=0;
+						b=0;
+						c=1;
+						cout << "Test 1 loaded" << endl;
+						break;
+		default:		cout << "Invalid test." << endl;
+						exit(EXIT_FAILURE);
+		
+	}
+}
+
+
+void Model::ParseParameters(int argc, char* argv[])
+{
+	// Looking for argument defining input parameters data
+    int inputType = 0;
+	string filename;
+	char test;
     //Creating default filename and string to hold the arguments
-    string filename="input.txt";
     string option;
     //Iterating through the arguments to get options
     for (int i=1; i<argc; i++)
@@ -154,48 +200,52 @@ Model::Model(int argc, char* argv[])
             case 'p':   filename=option.substr(2);
                         cout << "Reading parameters from a file." << endl;
                         cout << "Input filename set to: "<<filename<<endl;
-                        comm = false;
+                        inputType = 1;
+                        break;
+			case 't':   test = option[2];
+                        cout << "Reading parameters from a test." << endl;
+                        cout << "Test set to: test"<<test<<endl;
+                        inputType = 2;
+                        break;
+			case 's':   cout << "Small grid testing." << endl;
+                        small = true;
                         break;
             //Place for other options
         }
     }
+	
     //Reading parameters
     bool readSuccess;
-    //From a file if overriden with flag
-    if (!comm)
-        readSuccess = readInputFile(filename);
-    else
-    {
-        // or from the command line
-        readInputCmd();
-        readSuccess = true;
-    }
+    switch (inputType)
+	{
+		case 0:	readInputCmd();
+				readSuccess = true;
+				break;
+		case 1:	readSuccess = readInputFile(filename);
+				break;
+		case 2:	readSuccess = true;
+				readTest(test);
+				break;
+	}
+	
+	
     if (readSuccess)
         cout << "Parameters were read successfully." << endl << endl;
 
+}
+
+Model::Model(int argc, char* argv[])
+{
+    cout << endl << "Starting execution." <<endl <<endl;
+    ParseParameters(argc, argv);
+	
     //Filling the rest of the parameters
     cout << "Filling rest of the parameters" << endl << endl;
     ParameterFill();
 
     //Checking if valid and asking if problems
-    int info = IsValid();
-    switch (info)
-    {
-        case 0:     cout << "Model is valid." << endl;
-                    break;
-        case 1:     cout << "Model is invalid." << endl;
-                    PrintParameters();
-                    exit(EXIT_FAILURE);
-                    break;
-        case 2:     cout << "Warning. Parameters could be invalid." << endl;
-                    PrintParameters();
-                    cout << "Do you want to continue [y/n] ?" << endl;
-                    char ans='n';
-                    cin >> ans;
-                    if (ans!='y')
-                        exit(EXIT_FAILURE);
-                    break;
-    }
+    IsValid();
+    
 };
 
 Model::~Model() {};

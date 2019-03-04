@@ -3,6 +3,7 @@
 
 #include<cmath>
 #include<iostream>
+#include<iomanip>
 
 class Burgers {
 
@@ -11,14 +12,18 @@ public:
     ~Burgers();
 
     void Run();
-    double* GetRes();
+    double* GetResU();
+	double* GetResV();
+	void PrintGrid();
 
 
 private:
 
     //Pointer to the grid (results)
-    double* grid;
-
+    double* ugrid;
+	double* vgrid;
+	void Initialize();
+	void Integrate();
 
     //Same parameters as model has
     //Numerics
@@ -37,6 +42,8 @@ private:
     double b;
     double c;
 
+	//bools
+	bool small;
 
 
 };

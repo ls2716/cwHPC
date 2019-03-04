@@ -7,14 +7,14 @@
 //#include mpi.h
 
 class Model {
-	public:
+     public:
 		Model(int argc, char* argv[]);
         ~Model();
 
         void PrintParameters();
 
 
-        int IsValid();
+        void IsValid();
 
         //Getters
         bool   IsVerbose() const { return verbose; }
@@ -34,7 +34,7 @@ class Model {
         double GetAy()     const { return ay; }
         double GetB()      const { return b; }
         double GetC()      const { return c; }
-
+		double GetSmall()  const { return small; }
         //Add any other getters here...
 
 
@@ -44,13 +44,17 @@ class Model {
         //Input reader
         bool readInputFile(std::string filename);
         void readInputCmd();
-
+		void readTest(char testname);
+		
+		void ParseParameters(int argc, char* argv[]);
+		
 		//Check if parameters are valid
         void ValidateParameters();
         void ParameterFill();
 
         bool verbose=false;
         bool help=false;
+		bool small=false;
 
         //Numerics
         double L;
