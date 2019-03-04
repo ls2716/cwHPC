@@ -1,24 +1,17 @@
 #include <chrono>
+#include <iostream>
+#include "model.h"
+#include "burgers.h"
 
-#include "Model.h"
-#include "Burgers.h"
+using namespace std;
+// This is a testing script
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 
     Model m(argc, argv);
-    //Burgers b(m);
-
-    // Call code to initialise the problem here
-
-    typedef std::chrono::high_resolution_clock hrc;
-    typedef std::chrono::milliseconds ms;
-    hrc::time_point start = hrc::now();
-
-    // Call code to perform time integration here
-
-    hrc::time_point end = hrc::now();
-
-    // Calculate final energy and write output
+    m.PrintParameters();
+    Burgers b(m);
 
     return 0;
 }
