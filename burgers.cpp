@@ -18,6 +18,7 @@ Burgers::Burgers(Model& m)
 	b = m.GetB();
 	c = m.GetC();
 	small = m.GetSmall();
+	quick = m.GetQuick();
 };
 
 Burgers::~Burgers(){};
@@ -28,6 +29,8 @@ void Burgers::Initialize()
 {
 	ugrid = new double[Nx*Ny];
 	vgrid = new double[Nx*Ny];
+	ugriddt = new double[Nx*Ny];
+	vgriddt = new double[Nx*Ny];
 	double x,y,r;
 	double Lo2 = L/2;
 	for (int j=0; j<Ny; j++)
@@ -70,16 +73,76 @@ void Burgers::Initialize()
 	cout << "Grid successfully initialized" <<endl;
 }
 
+void Burgers::WriteToFile(string outname)
+{
+	ofstream file;
+	file.open(outname, ios::out | ios::trunc);
+	cout << "Printing u" <<endl << endl;
+	for (int j=Ny-1; j>=0; j--)
+	{
+		for (int i=0; i<(Nx-1); i++)
+			file << ugrid[i+j*Nx]<<"	";
+		file << ugrid[Nx-1+j*Nx]<<endl;
+	}
+	cout << "Printing v" <<endl << endl;
+	for (int j=Ny-1; j>=0; j--)
+	{
+		for (int i=0; i<(Nx-1); i++)
+			file << vgrid[i+j*Nx]<<"	";
+		file << vgrid[Nx-1+j*Nx]<<endl;
+	}
+	file.close();
+}
+
+
+void Burgers::ddt(int is, int js, int ie, int je)
+{
+	//cout << "Calculating differences" <<setw(5)<<is<<setw(5)<<js<<setw(5)<<ie<<setw(5)<<je << endl;
+	for (int i=is; i<ie; i++)
+		for (int j=js; j<je; j++)
+		{
+			ugriddt[i+j*Nx]=dt*(c*((ugrid[i+1+j*Nx]-2*ugrid[i+j*Nx]+ugrid[i-1+j*Nx])/dx/dx+(ugrid[i+(j+1)*Nx]-2*ugrid[i+j*Nx]+ugrid[i+(j-1)*Nx])/dy/dy)
+			-(ax+b*ugrid[i+j*Nx])*(ugrid[i+j*Nx]-ugrid[i-1+j*Nx])/dx-(ay+b*vgrid[i+j*Nx])*(ugrid[i+j*Nx]-ugrid[i+(j-1)*Nx])/dy);
+			vgriddt[i+j*Nx]=dt*(c*((vgrid[i+1+j*Nx]-2*vgrid[i+j*Nx]+vgrid[i-1+j*Nx])/dx/dx+(vgrid[i+(j+1)*Nx]-2*vgrid[i+j*Nx]+vgrid[i+(j-1)*Nx])/dy/dy)
+			-(ax+b*ugrid[i+j*Nx])*(vgrid[i+j*Nx]-vgrid[i-1+j*Nx])/dx-(ay+b*vgrid[i+j*Nx])*(vgrid[i+j*Nx]-vgrid[i+(j-1)*Nx])/dy);
+		}
+}
+
+void Burgers::Update(int is, int js, int ie, int je)
+{
+	t+=dt;
+	cout << "Updating t=" << t<<endl;
+	for (int i=is; i<ie; i++)
+		for (int j=js; j<je; j++)
+		{
+			ugrid[i+j*Nx]+=ugriddt[i+j*Nx];
+			vgrid[i+j*Nx]+=vgriddt[i+j*Nx];
+			
+		if (small)
+			PrintGrid();
+		}
+}
+
 void Burgers::Integrate()
 {
-	cout << "This doesn't do anything" <<endl;
+	cout << "Intergrating with time..." <<endl;
+	while (t<T)
+	{
+		if ((T-t)<dt)
+			dt=T-t;
+		ddt(1,1,Nx-1,Ny-1);
+		Update(1,1,Nx-1,Ny-1);
+	}
+	cout << "Finished." << endl;
 }
 
 void Burgers::Run()
 {
-	cout<< endl << "Running simulation" << endl;
+	cout<< endl << "Running simulation - output filename: " << outname << endl;
 	Initialize();
+	WriteToFile("out_t_0.txt");
 	Integrate();
+	WriteToFile("out_t_1.txt");
 }
 
 double* Burgers::GetResU()

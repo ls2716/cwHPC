@@ -14,7 +14,8 @@ int main(int argc, char* argv[])
     Burgers b(m);
 	b.Run();
 	double* ures = b.GetResU();
-	cout << ures[995+1100*m.GetNx()] << endl;
+	//cout << ures[995+1100*m.GetNx()] << endl;
 	b.PrintGrid();
+	//b.WriteToFile("out_t_1.txt");
     return 0;
 }

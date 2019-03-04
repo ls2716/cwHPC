@@ -35,12 +35,16 @@ class Model {
         double GetB()      const { return b; }
         double GetC()      const { return c; }
 		double GetSmall()  const { return small; }
+		double GetQuick()  const { return small; }
+		std::string GetOutname() const { return outname; }
         //Add any other getters here...
 
 
 
-    private:
-
+	private:
+	
+		//outputname
+		std::string outname="out.txt";
         //Input reader
         bool readInputFile(std::string filename);
         void readInputCmd();
@@ -55,6 +59,7 @@ class Model {
         bool verbose=false;
         bool help=false;
 		bool small=false;
+		bool quick=false;
 
         //Numerics
         double L;
@@ -65,6 +70,7 @@ class Model {
         double dx;
         double dy;
         double dt;
+		
 
         //Physics
         double ax;

@@ -4,6 +4,8 @@
 #include<cmath>
 #include<iostream>
 #include<iomanip>
+#include<fstream>
+#include<string>
 
 class Burgers {
 
@@ -15,16 +17,24 @@ public:
     double* GetResU();
 	double* GetResV();
 	void PrintGrid();
+	void WriteToFile(std::string outname);
 
 
 private:
 
-    //Pointer to the grid (results)
+	//outputname
+	std::string outname;
+    //Pointers to the grid (results)
     double* ugrid;
 	double* vgrid;
+	//Pointers to update value
+	double* ugriddt;
+	double* vgriddt;
 	void Initialize();
 	void Integrate();
-
+	void ddt(int is, int js, int ie, int je);
+	void Update(int is, int js, int ie, int je);
+	
     //Same parameters as model has
     //Numerics
     double L;
@@ -35,6 +45,7 @@ private:
     double dx;
     double dy;
     double dt;
+	double t=0;
 
     //Physics
     double ax;
@@ -44,6 +55,7 @@ private:
 
 	//bools
 	bool small;
+	bool quick;
 
 
 };

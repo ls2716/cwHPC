@@ -63,19 +63,18 @@ void Model::ParameterFill()
     Nx=2001;
     Ny=2001;
     Nt=4000;
-    dx=L/Nx;
-    dy=L/Ny;
-    dt=T/Nt;
+	if (quick)
+		Nt=200;
+	dt=T/Nt;
 	if (small)
 	{
 		cout << "Small filling." <<endl;
 		Nx=11;
 		Ny=11;
-		Nt=4000;
-		dx=L/Nx;
-		dy=L/Ny;
-		dt=T/Nt;
 	}
+	dx=L/Nx;
+    dy=L/Ny;
+	
 }
 
 //Printing parameters function
@@ -170,6 +169,27 @@ void Model::readTest(char testname)
 						b=0;
 						c=1;
 						cout << "Test 1 loaded" << endl;
+		case '2':	T=0.2;
+						L=10;
+						ax=0;
+						ay=0;
+						b=0;
+						c=1;
+						cout << "Test 2 loaded" << endl;
+		case '3':	T=1;
+						L=10;
+						ax=0;
+						ay=1;
+						b=0;
+						c=0;
+						cout << "Test 3 loaded" << endl;
+		case '4':	T=1;
+						L=10;
+						ax=1;
+						ay=0.5;
+						b=1;
+						c=0.02;
+						cout << "Test 4 loaded" << endl;
 						break;
 		default:		cout << "Invalid test." << endl;
 						exit(EXIT_FAILURE);
@@ -210,6 +230,12 @@ void Model::ParseParameters(int argc, char* argv[])
 			case 's':   cout << "Small grid testing." << endl;
                         small = true;
                         break;
+			case 'q':   cout << "Quick testing." << endl;
+                        quick = true;
+                        break;
+			case 'o':	outname = option.substr(2);
+						cout << "Output file set to: "<<outname<<endl;
+						break;
             //Place for other options
         }
     }
