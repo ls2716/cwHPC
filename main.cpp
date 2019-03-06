@@ -8,14 +8,20 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-
+	MPI_Init(&argc, &argv);
+	
     Model m(argc, argv);
-    m.PrintParameters();
-    Burgers b(m);
-	b.Run();
-	double* ures = b.GetResU();
-	//cout << ures[995+1100*m.GetNx()] << endl;
-	b.PrintGrid();
-	//b.WriteToFile("out_t_1.txt");
+	
+	//cout << "Still okay" << endl;
+//	for (int i=0; i<argc; i++)
+//		cout<<argv[i]<<endl;
+    //m.PrintParameters();
+	Burgers b(m);
+//	b.Run();
+//	double* ures = b.GetResU();
+//	//cout << ures[995+1100*m.GetNx()] << endl;
+//	b.PrintGrid();
+//	//b.WriteToFile("out_t_1.txt");
+	MPI_Finalize();
     return 0;
 }

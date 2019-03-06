@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
-//#include mpi.h
+#include <mpi.h>
 
 class Model {
      public:
@@ -17,11 +17,6 @@ class Model {
         void IsValid();
 
         //Getters
-        bool   IsVerbose() const { return verbose; }
-        bool   IsHelp()    const { return help; }
-//        double GetX0()     const { return x0; }
-//        double GetY0()     const { return y0; }
-//        double GetLx()     const { return Lx; }
         double GetL()      const { return L; }
         double GetT()      const { return T; }
         int    GetNx()     const { return Nx; }
@@ -34,32 +29,19 @@ class Model {
         double GetAy()     const { return ay; }
         double GetB()      const { return b; }
         double GetC()      const { return c; }
-		double GetSmall()  const { return small; }
-		double GetQuick()  const { return small; }
-		std::string GetOutname() const { return outname; }
-        //Add any other getters here...
+		int    GetPx()     const { return Px; }
+        int    GetPy()     const { return Py; }
 
 
 
 	private:
 	
-		//outputname
-		std::string outname="out.txt";
-        //Input reader
-        bool readInputFile(std::string filename);
-        void readInputCmd();
-		void readTest(char testname);
 		
 		void ParseParameters(int argc, char* argv[]);
 		
 		//Check if parameters are valid
         void ValidateParameters();
         void ParameterFill();
-
-        bool verbose=false;
-        bool help=false;
-		bool small=false;
-		bool quick=false;
 
         //Numerics
         double L;
@@ -70,6 +52,14 @@ class Model {
         double dx;
         double dy;
         double dt;
+		int Px;
+		int Py;
+		int my_rank;
+		int P;
+		int my_Nx;
+		int my_Ny;
+		int my_grid_pos_x;
+		int my_grid_pos_y;
 		
 
         //Physics
@@ -77,14 +67,15 @@ class Model {
         double ay;
         double b;
         double c;
+		double axf;
+		double ayf;
+		double bxf;
+		double byf;
+		double cxf;
+		double cyf;
+		double cxf2;
+		double cyf2;
 
-//        //Bools to check if initialised
-//        bool isL=false;
-//        bool isT=false;
-//        bool isax=false;
-//        bool isay=false;
-//        bool isb=false;
-//        bool isc=false;
 
 
 

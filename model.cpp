@@ -22,7 +22,12 @@ void Model::IsValid()
         cout << "Error. Domain length cannot be negative." << endl;
         def = 1;
     }
-    if (dx>0.02)
+    if (dx>0.05)
+    {
+        cout << "Warning. Domain is too big for accuracy." << endl;
+        def = 2;
+    }
+	if (dy>0.05)
     {
         cout << "Warning. Domain is too big for accuracy." << endl;
         def = 2;
@@ -37,6 +42,11 @@ void Model::IsValid()
         cout << "Warning. c in negative - negative diffusion - instabilities!." << endl;
         def = 2;
     }
+	if (P!=(Px*Py))
+	{
+		cout << "The grid is wrongly subdivided" <<endl;
+		def = 1;
+	}
     
 	switch (def)
     {
@@ -60,21 +70,10 @@ void Model::IsValid()
 //Filling missing model parameters
 void Model::ParameterFill()
 {
-    Nx=2001;
-    Ny=2001;
-    Nt=4000;
-	if (quick)
-		Nt=200;
 	dt=T/Nt;
-	if (small)
-	{
-		cout << "Small filling." <<endl;
-		Nx=11;
-		Ny=11;
-	}
 	dx=L/Nx;
     dy=L/Ny;
-	
+	cout << "My rank: "<< my_rank << " I have filled my parameters." << endl; 
 }
 
 //Printing parameters function
@@ -93,185 +92,54 @@ void Model::PrintParameters()
     cout << "dx = " << dx << endl;
     cout << "dy = " << dy << endl;
     cout << "dt = " << dt << endl;
-}
-
-// Method for reading input parameters from a file
-bool Model::readInputFile(string filename)
-{
-    cout << "Reading parameters from: " <<filename<< endl;
-    ifstream inputfile;
-    inputfile.open(filename);
-    if (inputfile.fail())
-    {
-        cout << "Couldn't read the input file." << endl;
-        cout << "Check if '" << filename << "' exists." << endl;
-        exit(EXIT_FAILURE);
-    }
-
-    //Checking if appropriate number of lines
-    string line;
-    int lTotal=0;
-    while(!inputfile.eof())
-    {
-        getline(inputfile, line);
-        lTotal ++;
-    }
-    if (lTotal<6)
-    {
-        cout << "Not enough data. " <<endl;
-        cout << "Input parameters should be written in separate lines in following order:" << endl;
-        cout << "T, L, ax, ay, b, c" << endl;
-        exit(EXIT_FAILURE);
-    }
-
-    //Going to the beginning of the file
-    inputfile.clear();
-    inputfile.seekg(0, ios::beg);
-
-    //Reading parameters
-    inputfile >> T;
-    inputfile >> L;
-    inputfile >> ax;
-    inputfile >> ay;
-    inputfile >> b;
-    inputfile >> c;
-
-    //Reading file
-    return true;
-}
-
-//Function for reading parameters from the command line
-void Model::readInputCmd()
-{
-    cout << "Reading parameters from the command line." << endl;
-    cout << "Please input final time T." << endl;
-    cin >> T;
-    cout << "Please input domain size L." << endl;
-    cin >> L;
-    cout << "Please input parameter ax." << endl;
-    cin >> ax;
-    cout << "Please input parameter ay." << endl;
-    cin >> ay;
-    cout << "Please input parameter b." << endl;
-    cin >> b;
-    cout << "Please input parameter c." << endl;
-    cin >> c;
-}
-
-void Model::readTest(char testname)
-{
-	switch (testname)
-	{
-		case '1':	T=1;
-						L=10;
-						ax=0;
-						ay=0;
-						b=0;
-						c=1;
-						cout << "Test 1 loaded" << endl;
-		case '2':	T=0.2;
-						L=10;
-						ax=0;
-						ay=0;
-						b=0;
-						c=1;
-						cout << "Test 2 loaded" << endl;
-		case '3':	T=1;
-						L=10;
-						ax=0;
-						ay=1;
-						b=0;
-						c=0;
-						cout << "Test 3 loaded" << endl;
-		case '4':	T=1;
-						L=10;
-						ax=1;
-						ay=0.5;
-						b=1;
-						c=0.02;
-						cout << "Test 4 loaded" << endl;
-						break;
-		default:		cout << "Invalid test." << endl;
-						exit(EXIT_FAILURE);
-		
-	}
+	cout << "P = " << P << endl;
+	cout << "Px = " << Px << endl;
+	cout << "Py = " << Py << endl;
 }
 
 
 void Model::ParseParameters(int argc, char* argv[])
 {
-	// Looking for argument defining input parameters data
-    int inputType = 0;
-	string filename;
-	char test;
-    //Creating default filename and string to hold the arguments
-    string option;
-    //Iterating through the arguments to get options
-    for (int i=1; i<argc; i++)
-    {
-        option = argv[i];
-        if ((option[0]!='-'))
-        {
-            cout << "Invalid flag: "<< option << endl;
-            exit(EXIT_FAILURE);
-        }
-        switch (option[1])
-        {
-            case 'p':   filename=option.substr(2);
-                        cout << "Reading parameters from a file." << endl;
-                        cout << "Input filename set to: "<<filename<<endl;
-                        inputType = 1;
-                        break;
-			case 't':   test = option[2];
-                        cout << "Reading parameters from a test." << endl;
-                        cout << "Test set to: test"<<test<<endl;
-                        inputType = 2;
-                        break;
-			case 's':   cout << "Small grid testing." << endl;
-                        small = true;
-                        break;
-			case 'q':   cout << "Quick testing." << endl;
-                        quick = true;
-                        break;
-			case 'o':	outname = option.substr(2);
-						cout << "Output file set to: "<<outname<<endl;
-						break;
-            //Place for other options
-        }
-    }
-	
-    //Reading parameters
-    bool readSuccess;
-    switch (inputType)
-	{
-		case 0:	readInputCmd();
-				readSuccess = true;
-				break;
-		case 1:	readSuccess = readInputFile(filename);
-				break;
-		case 2:	readSuccess = true;
-				readTest(test);
-				break;
-	}
+	// Reading the data
+	T = strtod(argv[1],NULL);
+	L = strtod(argv[2],NULL);
+	Nx = strtod(argv[3],NULL);
+	Ny = strtod(argv[4],NULL);
+	Nt = strtod(argv[5],NULL);
+	ax = strtod(argv[6],NULL);
+	ay = strtod(argv[7],NULL);
+	b = strtod(argv[8],NULL);
+	c = strtod(argv[9],NULL);
+	Px = strtod(argv[10],NULL);
+	Py = strtod(argv[11],NULL);
 	
 	
-    if (readSuccess)
-        cout << "Parameters were read successfully." << endl << endl;
-
+    cout << "My rank: "<< my_rank << " I have all inputs." << " My pos x: " << my_grid_pos_x << " My pos y: " << my_grid_pos_y<< " My Nx: " << my_Nx<< " My Ny: " << my_Ny<< endl; 
+	
 }
+
+
 
 Model::Model(int argc, char* argv[])
 {
-    cout << endl << "Starting execution." <<endl <<endl;
-    ParseParameters(argc, argv);
-	
-    //Filling the rest of the parameters
-    cout << "Filling rest of the parameters" << endl << endl;
-    ParameterFill();
-
-    //Checking if valid and asking if problems
-    IsValid();
+	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &P);
+    cout << endl << "Starting execution. - My rank = "<<my_rank <<endl <<endl;
     
+	//Reading parameters
+	ParseParameters(argc, argv);
+
+	//Filling the rest of the parameters
+	cout << "My rank: "<<my_rank << " Filling rest of the parameters" << endl << endl;
+	ParameterFill();
+	
+	MPI_Barrier(MPI_COMM_WORLD);
+	//Checking if valid and asking if problems
+	if (my_rank==0)
+	{
+		IsValid();
+		PrintParameters();
+	}
 };
 
 Model::~Model() {};

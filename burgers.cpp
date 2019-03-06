@@ -5,6 +5,8 @@ using namespace std;
 
 Burgers::Burgers(Model& m)
 {
+	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+	
 	T = m.GetT();
 	L = m.GetL();
 	Nx = m.GetNx();
@@ -17,8 +19,32 @@ Burgers::Burgers(Model& m)
 	ay = m.GetAy();
 	b = m.GetB();
 	c = m.GetC();
-	small = m.GetSmall();
-	quick = m.GetQuick();
+	Px = m.GetPx();
+	Py = m.GetPy();
+	P=Px*Py;
+	
+	axf=ax*dt/dx;
+	ayf=ay*dt/dy;
+	bxf=b*dt/dx;
+	byf=b*dt/dy;
+	cxf=c*dt/dx/dx;
+	cyf=c*dt/dy/dy;
+	
+	//This could be slower
+	cxf2=c*dt*2/dx/dx;
+	cyf2=c*dt*2/dy/dy;
+	
+	int modX = Nx%Px;
+	int modY = Ny%Py;
+	my_grid_pos_x = my_rank%Px;
+	my_grid_pos_y = my_rank/Px;
+	my_Ny=Ny/Py;
+	if (my_grid_pos_y+modY>=Py)
+		my_Ny++;
+	my_Nx=Nx/Px;
+	if (my_grid_pos_x+modX>=Px)
+		my_Nx++;
+	cout << "My rank: " << my_rank << " My pos x: " << my_grid_pos_x << " My pos y: " << my_grid_pos_y<< " My Nx: " << my_Nx<< " My Ny: " << my_Ny<< endl; 
 };
 
 Burgers::~Burgers(){};
@@ -118,8 +144,6 @@ void Burgers::Update(int is, int js, int ie, int je)
 			ugrid[i+j*Nx]+=ugriddt[i+j*Nx];
 			vgrid[i+j*Nx]+=vgriddt[i+j*Nx];
 			
-		if (small)
-			PrintGrid();
 		}
 }
 
@@ -145,35 +169,3 @@ void Burgers::Run()
 	WriteToFile("out_t_1.txt");
 }
 
-double* Burgers::GetResU()
-{
-	return ugrid;
-}
-
-double* Burgers::GetResV()
-{
-	return vgrid;
-}
-
-void Burgers::PrintGrid()
-{
-	if (small)
-	{
-		cout << "Printing u" <<endl << endl;
-		for (int j=Ny-1; j>=0; j--)
-		{
-			for (int i=0; i<Nx; i++)
-				cout << setw(10) << ugrid[i+j*Nx];
-			cout << endl;
-		}
-		cout << "Printing v" <<endl << endl;
-		for (int j=Ny-1; j>=0; j--)
-		{
-			for (int i=0; i<Nx; i++)
-				cout << setw(10) << vgrid[i+j*Nx];
-			cout << endl;
-		}
-	}
-	else
-		cout << "U Mad? Grid is too big."<<endl;
-}
