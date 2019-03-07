@@ -17,7 +17,10 @@ int main(int argc, char* argv[])
 //		cout<<argv[i]<<endl;
     //m.PrintParameters();
 	Burgers b(m);
-//	b.Run();
+	
+//	cout<< "done"<<endl;
+	b.Run();
+	
 //	double* ures = b.GetResU();
 //	//cout << ures[995+1100*m.GetNx()] << endl;
 //	b.PrintGrid();

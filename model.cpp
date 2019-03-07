@@ -114,7 +114,7 @@ void Model::ParseParameters(int argc, char* argv[])
 	Py = strtod(argv[11],NULL);
 	
 	
-    cout << "My rank: "<< my_rank << " I have all inputs." << " My pos x: " << my_grid_pos_x << " My pos y: " << my_grid_pos_y<< " My Nx: " << my_Nx<< " My Ny: " << my_Ny<< endl; 
+//    cout << "My rank: "<< my_rank << " I have all inputs." << " My pos x: " << my_grid_pos_x << " My pos y: " << my_grid_pos_y<< " My Nx: " << my_Nx<< " My Ny: " << my_Ny<< endl; 
 	
 }
 

@@ -17,23 +17,33 @@ public:
     double* GetResU();
 	double* GetResV();
 	void PrintGrid();
-	void WriteToFile(std::string outname);
+	void WriteToFile();
 
 
 private:
 
-	//outputname
-	std::string outname;
-    //Pointers to the grid (results)
-    double* ugrid;
-	double* vgrid;
-	//Pointers to update value
-	double* ugriddt;
-	double* vgriddt;
+    //Pointers to the grids odd and even
+    double* ugrid_o;
+	double* vgrid_o;
+	double* ugrid_e;
+	double* vgrid_e;
+	double* ugrid_l_vertB;
+	double* ugrid_r_vertB;
+	double* vgrid_l_vertB;
+	double* vgrid_r_vertB;
+	double* ugrid_myl_vertB;
+	double* ugrid_myr_vertB;
+	double* vgrid_myr_vertB;
+	double* vgrid_myl_vertB;
+	double* full_ugrid;
+	double* full_vgrid;
+	
 	void Initialize();
 	void Integrate();
 	void ddt(int is, int js, int ie, int je);
 	void Update(int is, int js, int ie, int je);
+
+	void Assemble();
 	
     //Same parameters as model has
     //Numerics
@@ -53,7 +63,10 @@ private:
 		int my_Ny;
 		int my_grid_pos_x;
 		int my_grid_pos_y;
-		
+		int my_grid_i0;
+		int my_grid_j0;
+		int my_grid_ie;
+		int my_grid_je;
 
         //Physics
         double ax;
