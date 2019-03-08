@@ -47,7 +47,7 @@ void Model::IsValid()
 		cout << "The grid is wrongly subdivided" <<endl;
 		def = 1;
 	}
-    
+
 	switch (def)
     {
         case 0:     cout << "Model is valid." << endl;
@@ -73,7 +73,7 @@ void Model::ParameterFill()
 	dt=T/Nt;
 	dx=L/Nx;
     dy=L/Ny;
-	cout << "My rank: "<< my_rank << " I have filled my parameters." << endl; 
+	cout << "My rank: "<< my_rank << " I have filled my parameters." << endl;
 }
 
 //Printing parameters function
@@ -112,28 +112,33 @@ void Model::ParseParameters(int argc, char* argv[])
 	c = strtod(argv[9],NULL);
 	Px = strtod(argv[10],NULL);
 	Py = strtod(argv[11],NULL);
-	
-	
-//    cout << "My rank: "<< my_rank << " I have all inputs." << " My pos x: " << my_grid_pos_x << " My pos y: " << my_grid_pos_y<< " My Nx: " << my_Nx<< " My Ny: " << my_Ny<< endl; 
-	
+
+
+//    cout << "My rank: "<< my_rank << " I have all inputs." << " My pos x: " << my_grid_pos_x << " My pos y: " << my_grid_pos_y<< " My Nx: " << my_Nx<< " My Ny: " << my_Ny<< endl;
+
 }
 
 
-
+/* Constructor has to get parameters both of the simulation
+/ as well as numerics for handling the sizes of each grid.
+/ Each of the processes has to construct their own model and read parameters.
+/ It is faster than broadcast.
+*/
 Model::Model(int argc, char* argv[])
 {
+    //Getting rank and number of processes
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &P);
+
     cout << endl << "Starting execution. - My rank = "<<my_rank <<endl <<endl;
-    
+
 	//Reading parameters
 	ParseParameters(argc, argv);
 
 	//Filling the rest of the parameters
 	cout << "My rank: "<<my_rank << " Filling rest of the parameters" << endl << endl;
 	ParameterFill();
-	
-	MPI_Barrier(MPI_COMM_WORLD);
+
 	//Checking if valid and asking if problems
 	if (my_rank==0)
 	{
@@ -142,4 +147,5 @@ Model::Model(int argc, char* argv[])
 	}
 };
 
+//Nothing to be done on the deletion
 Model::~Model() {};

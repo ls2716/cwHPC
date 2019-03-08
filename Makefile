@@ -1,6 +1,6 @@
 default: all
 
-main.o: main.cpp 
+main.o: main.cpp
 	mpicxx -std=c++11 -Wall -O2 -o main.o -c main.cpp
 
 model.o: model.cpp model.h
@@ -20,7 +20,7 @@ diff: compile
 
 advx: compile
 	mpiexec -np 6 my_prog 1.0 10.0 200 200 400 1 0 0 0 3 2
-	
+
 advy: compile
 	mpiexec -np 6 my_prog 1.0 10.0 200 200 400 0 1 0 0 3 2
 

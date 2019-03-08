@@ -11,9 +11,9 @@ class Model {
 		Model(int argc, char* argv[]);
         ~Model();
 
+        //Parameter print
         void PrintParameters();
-
-
+        //Validity check
         void IsValid();
 
         //Getters
@@ -35,12 +35,13 @@ class Model {
 
 
 	private:
-	
-		
+
+		//Parsing the parameters from program arguments
 		void ParseParameters(int argc, char* argv[]);
-		
+
 		//Check if parameters are valid
         void ValidateParameters();
+        //Filing rest of the parameters
         void ParameterFill();
 
         //Numerics
@@ -52,15 +53,14 @@ class Model {
         double dx;
         double dy;
         double dt;
+
+        //Numerics for MPI
 		int Px;
 		int Py;
 		int my_rank;
 		int P;
-		int my_Nx;
-		int my_Ny;
-		int my_grid_pos_x;
-		int my_grid_pos_y;
-		
+
+
 
         //Physics
         double ax;
@@ -77,9 +77,6 @@ class Model {
 		double cyf2;
 
 
-
-
-        //Add any additional parameters here...
 };
 
 #endif
