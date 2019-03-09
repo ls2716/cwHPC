@@ -145,6 +145,7 @@ Model::Model(int argc, char* argv[])
 		IsValid();
 		PrintParameters();
 	}
+	MPI_Barrier(MPI_COMM_WORLD);
 };
 
 //Nothing to be done on the deletion

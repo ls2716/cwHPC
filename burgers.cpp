@@ -156,6 +156,8 @@ void Burgers::Initialize()
 	ugrid_myr_vertB = new double[my_Ny];
 	vgrid_myr_vertB = new double[my_Ny];
 	vgrid_myl_vertB = new double[my_Ny];
+	vgrid_out = vgrid_e;
+	ugrid_out = ugrid_e;
 
     // Initial value calculation
 	double x,y,r; // numerics
@@ -196,23 +198,24 @@ void Burgers::WriteToFile()
 	cout << "Writing to a file" <<endl;
 	int full_Nx=Nx+2;
 	int full_Ny=Ny+2;
-	ofstream file;
-	file.open("grid.txt", ios::out | ios::trunc);
-	cout << "Printing u" <<endl << endl;
-	for (int j=full_Ny-1; j>=0; j--)
-	{
-		for (int i=0; i<(full_Nx-1); i++)
-			file << full_ugrid[i+j*full_Nx]<<"	";
-		file << full_ugrid[full_Nx-1+j*full_Nx]<<endl;
-	}
-	cout <<endl<<endl<< "Printing v" <<endl << endl;
-	for (int j=full_Ny-1; j>=0; j--)
-	{
-		for (int i=0; i<(full_Nx-1); i++)
-			file << full_vgrid[i+j*full_Nx]<<"	";
-		file << full_vgrid[full_Nx-1+j*full_Nx]<<endl;
-	}
-	file.close();
+	ofstream file0;
+	file0.open("grid.txt", ios::out | ios::trunc);
+//	cout << "Printing u" <<endl << endl;
+//	for (int j=full_Ny-1; j>=0; j--)
+//	{
+//		for (int i=0; i<(full_Nx-1); i++)
+//			file0 << full_ugrid[i+j*full_Nx]<<"	";
+//		file0 << full_ugrid[full_Nx-1+j*full_Nx]<<endl;
+//	}
+//	cout << "Done printing u" << endl;
+//	cout <<endl<<endl<< "Printing v" <<endl << endl;
+//	for (int j=full_Ny-1; j>=0; j--)
+//	{
+//		for (int i=0; i<(full_Nx-1); i++)
+//			file << full_vgrid[i+j*full_Nx]<<"	";
+//		file << full_vgrid[full_Nx-1+j*full_Nx]<<endl;
+//	}
+	file0.close();
 }
 
 //Assembling full grid for final Energy calculation and writing to a file
@@ -283,6 +286,7 @@ void Burgers::Assemble()
 				full_vgrid[(1+i)+full_Ny+j*my_Ny]=vgrid_out[i+j*my_Ny];
 			}
 		}
+		cout<<"Assembled mine"<<endl;
 	}
 	else //Sending
 	{
@@ -581,5 +585,6 @@ void Burgers::Run()
 	Assemble();
 //	if (my_rank==0)
 //		WriteToFile();
+	MPI_Barrier(MPI_COMM_WORLD);
 }
 
