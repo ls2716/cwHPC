@@ -43,6 +43,7 @@ private:
 	double* vgrid_myl_vertB;
 	double* full_ugrid;
 	double* full_vgrid;
+	//Pointer for calculations
 	double* ugrid_in;
 	double* vgrid_in;
 	double* ugrid_out;
@@ -52,7 +53,7 @@ private:
 	double* uout_pointer;
 	double* vout_pointer;
 
-    //Methos for performing simulation
+    //Methods for performing simulation
 	void Initialize();
 	void Integrate();
 	void NextStep();

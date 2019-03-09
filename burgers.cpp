@@ -116,6 +116,14 @@ Burgers::~Burgers()
 	delete[] vgrid_myl_vertB;
 	delete[] full_ugrid;
 	delete[] full_vgrid;
+	delete[] ugrid_in;
+	delete[] ugrid_out;
+	delete[] vgrid_in;
+	delete[] vgrid_out;
+	delete[] urob_pointer;
+	delete[] vrob_pointer;
+	delete[] uout_pointer;
+	delete[] vout_pointer;
 
 };
 
@@ -174,9 +182,9 @@ void Burgers::Initialize()
 			}
 		}
 		//Updating own boundaries of process 0 - have to be sent at the beginning of each time step
-		ugrid_myr_vertB[j] = ugrid_e[my_Nx-1+j_offset];
+		ugrid_myr_vertB[j] = ugrid_e[smy_Nx+j_offset];
 		ugrid_myl_vertB[j] = ugrid_e[j_offset];
-		vgrid_myr_vertB[j] = vgrid_e[my_Nx-1+j_offset];
+		vgrid_myr_vertB[j] = vgrid_e[smy_Nx-1+j_offset];
 		vgrid_myl_vertB[j] = vgrid_e[j_offset];
 	}
 
@@ -295,19 +303,19 @@ void Burgers::BoundaryUpdate()
     counter=0;
     if (downB)
     {
-        ierr=MPI_Isend(&ugrid_in[my_Nx],my_Nx,MPI_DOUBLE, my_rank-Px,2,MPI_COMM_WORLD,&send_request[counter]);
+        ierr=MPI_Isend(&ugrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,2,MPI_COMM_WORLD,&send_request[counter]);
         ierr=MPI_Irecv(ugrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,0,MPI_COMM_WORLD,&recv_request[counter]);
         counter++;
-        ierr=MPI_Isend(&vgrid_in[my_Nx],my_Nx,MPI_DOUBLE, my_rank-Px,6,MPI_COMM_WORLD,&send_request[counter]);
+        ierr=MPI_Isend(&vgrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,6,MPI_COMM_WORLD,&send_request[counter]);
         ierr=MPI_Irecv(vgrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,4,MPI_COMM_WORLD,&recv_request[counter]);
         counter++;
     }
     if (upB)
     {
-        ierr=MPI_Isend(&ugrid_in[my_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,0,MPI_COMM_WORLD,&send_request[counter]);
+        ierr=MPI_Isend(&ugrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,0,MPI_COMM_WORLD,&send_request[counter]);
         ierr=MPI_Irecv(ugrid_t_horB,my_Nx,MPI_DOUBLE,my_rank+Px,2,MPI_COMM_WORLD,&recv_request[counter]);
         counter++;
-        ierr=MPI_Isend(&vgrid_in[my_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,4,MPI_COMM_WORLD,&send_request[counter]);
+        ierr=MPI_Isend(&vgrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,4,MPI_COMM_WORLD,&send_request[counter]);
         ierr=MPI_Irecv(vgrid_t_horB,my_Nx,MPI_DOUBLE,my_rank+Px,6,MPI_COMM_WORLD,&recv_request[counter]);
         counter++;
     }
