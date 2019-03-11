@@ -20,12 +20,16 @@ int main(int argc, char* argv[])
 	
 //	cout<< "done"<<endl;
 	b.Run();
+//	b.PrintSubDomain(1);
+//	b.PrintBound(1,'r');
 	
 //	double* ures = b.GetResU();
 //	//cout << ures[995+1100*m.GetNx()] << endl;
 //	b.PrintGrid();
 //	//b.WriteToFile("out_t_1.txt");
-	cout << "Almost end"<<endl;
+//	b.~Burgers();
+	cout << "Finished"<<endl;
+	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_Finalize();
     return 0;
 }

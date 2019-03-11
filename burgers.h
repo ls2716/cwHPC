@@ -18,7 +18,8 @@ public:
 	//void PrintGrid();
 	void WriteToFile(); // Should be put as private
 	void Energy();
-	
+	void PrintSubDomain(int mrank);
+	void PrintBound(int mrank,char w);
 
 
 private:

@@ -19,13 +19,13 @@ diff: compile
 	mpiexec -np 9 my_prog 1.0 10.0 21 21 4000 0 0 0 1 3 3
 
 advx: compile
-	mpiexec -np 6 my_prog 1.0 10.0 200 200 400 1 0 0 0 3 2
+	mpiexec -np 1 my_prog 1.0 10.0 21 21 400 1 0 0 0 1 1
 
 advy: compile
-	mpiexec -np 6 my_prog 1.0 10.0 200 200 400 0 1 0 0 3 2
+	mpiexec -np 1 my_prog 1.0 10.0 21 21 400 0 1 0 0 1 1
 
 burg: compile
-	mpiexec -np 1 my_prog 1.0 10.0 200 200 400 1 0.5 1 0.02 3 1
+	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0.5 1 0.02 4 4
 
 clean:
 	-rm -f *.o my_prog   # Clean up (and ignore any errors)

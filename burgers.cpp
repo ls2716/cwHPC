@@ -52,8 +52,7 @@ Burgers::Burgers(Model& m)
 	my_grid_pos_y = my_rank/Px;
 	my_Ny=Ny/Py;
 	my_Nx=Nx/Px;
-	smy_Nx=my_Nx-1;
-	smy_Ny=my_Ny-1;
+	
 	//Two lines below could be faster using if statements
 	my_grid_i0 = my_grid_pos_x*my_Nx+max(modX+my_grid_pos_x-Px,0)+1;
 	my_grid_j0 = my_grid_pos_y*my_Ny+max(modY+my_grid_pos_y-Py,0)+1;
@@ -64,7 +63,9 @@ Burgers::Burgers(Model& m)
 		my_Nx++;
 	my_grid_ie=my_grid_i0+my_Nx;
 	my_grid_je=my_grid_j0+my_Ny;
-
+	
+	smy_Nx=my_Nx-1;
+	smy_Ny=my_Ny-1;
 	//Setting boundary type
 	if (my_grid_pos_x!=0)
 	{
@@ -115,8 +116,8 @@ Burgers::~Burgers()
 	delete[] ugrid_myr_vertB;
 	delete[] vgrid_myr_vertB;
 	delete[] vgrid_myl_vertB;
-	delete[] full_ugrid;
-	delete[] full_vgrid;
+//	delete[] full_ugrid;
+//	delete[] full_vgrid;
 //	delete[] ugrid_in;
 //	delete[] ugrid_out;
 //	delete[] vgrid_in;
@@ -197,18 +198,32 @@ void Burgers::Initialize()
 	cout << "Grid successfully initialized" <<endl;
 }
 
-
-
-void printB(double* Boun, int len, char w)
+void Burgers::PrintSubDomain(int mrank)
 {
-	cout.precision(3);
-	if (w=='h')
-		for (int i=0; i<len; i++)
-			cout<<" h "<<fixed<<Boun[i];
-	else
-		for (int j=len-1; j>=0; j--)
-			cout<<" v "<<fixed<<Boun[j];
-	cout<<endl;
+	if (my_rank==mrank)
+	{
+		cout<<"Printing domain of "<<mrank<<endl;
+		for (int j=smy_Ny; j>=0;j--)
+		{
+			for (int i=0;i<my_Nx;i++)
+				cout<<" "<<ugrid_out[i+j*my_Nx];
+			cout<<endl;
+		}
+		
+	}
+}
+
+
+void Burgers::PrintBound(int mrank, char w)
+{
+	if (my_rank==mrank)
+	{
+		cout.precision(4);
+		if (w=='r')
+			for (int j=smy_Ny; j>=0; j--)
+				cout<<" r "<<fixed<<ugrid_myr_vertB[j];
+		cout<<endl;
+	}
 }
 
 void Burgers::BoundaryUpdate()
@@ -256,7 +271,7 @@ void Burgers::BoundaryUpdate()
     }
     ierr=MPI_Waitall(counter,send_request,status);
     ierr=MPI_Waitall(counter,recv_request,status);
-    cout << "Updated boundaries" << endl;
+//    cout << "Updated boundaries" << endl;
 	//Send here
 	MPI_Barrier(MPI_COMM_WORLD);
 //	if (my_rank==2)
@@ -383,31 +398,31 @@ void Burgers::CalculateMyBoundaries()
 //TODO - put this into calculation of boundaries
 void Burgers::CalculateCorners()
 {
-	cout<<"My rank: "<<my_rank<<" Calculating corners"<<endl;
+//	cout<<"My rank: "<<my_rank<<" Calculating corners"<<endl;
     //Bottom left
     if (leftB&&downB)
     {
         ugrid_out[0]= ugrid_myl_vertB[0] = Cij*ugrid_in[0]+Cinj*ugrid_l_vertB[0]+Cipj*ugrid_in[1]+Cijp*ugrid_in[my_Nx]+Cijn*ugrid_b_horB[0]+Cbx*ugrid_in[0]*(ugrid_l_vertB[0]-ugrid_in[0])+Cby*vgrid_in[0]*(ugrid_b_horB[0]-ugrid_in[0]);
         vgrid_out[0]= vgrid_myl_vertB[0] = Cij*vgrid_in[0]+Cinj*vgrid_l_vertB[0]+Cipj*vgrid_in[1]+Cijp*vgrid_in[my_Nx]+Cijn*vgrid_b_horB[0]+Cbx*ugrid_in[0]*(vgrid_l_vertB[0]-vgrid_in[0])+Cby*vgrid_in[0]*(vgrid_b_horB[0]-vgrid_in[0]);
-		cout<<"My rank: "<<my_rank<<" Complex left bottom corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex left bottom corner"<<endl;
 	}
     else if (leftB)
     {
         ugrid_out[0]= ugrid_myl_vertB[0] = Cij*ugrid_in[0]+Cinj*ugrid_l_vertB[0]+Cipj*ugrid_in[1]+Cijp*ugrid_in[my_Nx]+Cbx*ugrid_in[0]*(ugrid_l_vertB[0]-ugrid_in[0])+Cby*vgrid_in[0]*(-ugrid_in[0]);
         vgrid_out[0]= vgrid_myl_vertB[0] = Cij*vgrid_in[0]+Cinj*vgrid_l_vertB[0]+Cipj*vgrid_in[1]+Cijp*vgrid_in[my_Nx]+Cbx*ugrid_in[0]*(vgrid_l_vertB[0]-vgrid_in[0])+Cby*vgrid_in[0]*(-vgrid_in[0]);
-		cout<<"My rank: "<<my_rank<<" Complex left (bottom)corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex left (bottom)corner"<<endl;
 	}
     else if (downB)
     {
         ugrid_out[0]= ugrid_myl_vertB[0] = Cij*ugrid_in[0]+Cipj*ugrid_in[1]+Cijp*ugrid_in[my_Nx]+Cijn*ugrid_b_horB[0]+Cbx*ugrid_in[0]*(-ugrid_in[0])+Cby*vgrid_in[0]*(ugrid_b_horB[0]-ugrid_in[0]);
         vgrid_out[0]= vgrid_myl_vertB[0] = Cij*vgrid_in[0]+Cipj*vgrid_in[1]+Cijp*vgrid_in[my_Nx]+Cijn*vgrid_b_horB[0]+Cbx*ugrid_in[0]*(-vgrid_in[0])+Cby*vgrid_in[0]*(vgrid_b_horB[0]-vgrid_in[0]);
-		cout<<"My rank: "<<my_rank<<" Complex bottom (left)corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex bottom (left)corner"<<endl;
 	}
     else
     {
         ugrid_out[0]= ugrid_myl_vertB[0] = Cij*ugrid_in[0]+Cipj*ugrid_in[1]+Cijp*ugrid_in[my_Nx]+Cbx*ugrid_in[0]*(-ugrid_in[0])+Cby*vgrid_in[0]*(-ugrid_in[0]);
         vgrid_out[0]= vgrid_myl_vertB[0] = Cij*vgrid_in[0]+Cipj*vgrid_in[1]+Cijp*vgrid_in[my_Nx]+Cbx*ugrid_in[0]*(-vgrid_in[0])+Cby*vgrid_in[0]*(-vgrid_in[0]);
-		cout<<"My rank: "<<my_rank<<" Grid bottom left corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Grid bottom left corner"<<endl;
 	}
     //Top left
     if (leftB&&upB)
@@ -415,28 +430,28 @@ void Burgers::CalculateCorners()
         j_offset=my_Nx*smy_Ny;
         ugrid_out[j_offset]= ugrid_myl_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_l_vertB[smy_Ny]+Cipj*ugrid_in[j_offset+1]+Cijp*ugrid_t_horB[0]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_l_vertB[smy_Ny]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myl_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_l_vertB[smy_Ny]+Cipj*vgrid_in[j_offset+1]+Cijp*vgrid_t_horB[0]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_l_vertB[smy_Ny]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-		cout<<"My rank: "<<my_rank<<" Complex left top corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex left top corner"<<endl;
 	}
     else if (leftB)
     {
         j_offset=my_Nx*smy_Ny;
         ugrid_out[j_offset]= ugrid_myl_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_l_vertB[smy_Ny]+Cipj*ugrid_in[j_offset+1]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_l_vertB[smy_Ny]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myl_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_l_vertB[smy_Ny]+Cipj*vgrid_in[j_offset+1]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_l_vertB[smy_Ny]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-		cout<<"My rank: "<<my_rank<<" Complex left (top) corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex left (top) corner"<<endl;
 	}
     else if (upB)
     {
         j_offset=my_Nx*smy_Ny;
         ugrid_out[j_offset]= ugrid_myl_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cipj*ugrid_in[j_offset+1]+Cijp*ugrid_t_horB[0]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myl_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cipj*vgrid_in[j_offset+1]+Cijp*vgrid_t_horB[0]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-		cout<<"My rank: "<<my_rank<<" Complex (left) top corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex (left) top corner"<<endl;
 	}
     else
     {
         j_offset=my_Nx*smy_Ny;
         ugrid_out[j_offset]= ugrid_myl_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cipj*ugrid_in[j_offset+1]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myl_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cipj*vgrid_in[j_offset+1]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-		cout<<"My rank: "<<my_rank<<" Grid left top corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Grid left top corner"<<endl;
 	}
     //Top right
     if (rightB&&upB)
@@ -444,53 +459,53 @@ void Burgers::CalculateCorners()
         j_offset = my_Nx*my_Ny-1;
         ugrid_out[j_offset]= ugrid_myr_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cipj*ugrid_r_vertB[smy_Ny]+Cijp*ugrid_t_horB[smy_Nx]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myr_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cipj*vgrid_r_vertB[smy_Ny]+Cijp*vgrid_t_horB[smy_Nx]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-		cout<<"My rank: "<<my_rank<<" Complex right top corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex right top corner"<<endl;
 	}
     else if (rightB)
     {
         j_offset = my_Nx*my_Ny-1;
         ugrid_out[j_offset]= ugrid_myr_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cipj*ugrid_r_vertB[smy_Ny]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myr_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cipj*vgrid_r_vertB[smy_Ny]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-		cout<<"My rank: "<<my_rank<<" Complex right (top) corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex right (top) corner"<<endl;
 	}
     else if (upB)
     {
         j_offset = my_Nx*my_Ny-1;
         ugrid_out[j_offset]= ugrid_myr_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cijp*ugrid_t_horB[smy_Nx]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myr_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cijp*vgrid_t_horB[smy_Nx]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-		cout<<"My rank: "<<my_rank<<" Complex (right) top corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex (right) top corner"<<endl;
 	}
     else
     {
         j_offset = my_Nx*my_Ny-1;
         ugrid_out[j_offset]= ugrid_myr_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myr_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-		cout<<"My rank: "<<my_rank<<" Grid right top corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Grid right top corner"<<endl;
 	}
     //Bottom right
     if (downB&&rightB)
     {
         ugrid_out[smy_Nx]= ugrid_myr_vertB[0] = Cij*ugrid_in[smy_Nx]+Cinj*ugrid_in[smy_Nx-1]+Cipj*ugrid_r_vertB[0]+Cijp*ugrid_in[smy_Nx+my_Nx]+Cijn*ugrid_b_horB[smy_Nx]+Cbx*ugrid_in[smy_Nx]*(ugrid_in[smy_Nx-1]-ugrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(ugrid_b_horB[smy_Nx]-ugrid_in[smy_Nx]);
         vgrid_out[smy_Nx]= vgrid_myr_vertB[0] = Cij*vgrid_in[smy_Nx]+Cinj*vgrid_in[smy_Nx-1]+Cipj*vgrid_r_vertB[0]+Cijp*vgrid_in[smy_Nx+my_Nx]+Cijn*vgrid_b_horB[smy_Nx]+Cbx*ugrid_in[smy_Nx]*(vgrid_in[smy_Nx-1]-vgrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(vgrid_b_horB[smy_Nx]-vgrid_in[smy_Nx]);
-		cout<<"My rank: "<<my_rank<<" Complex right bot corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex right bot corner"<<endl;
 	}
     else if (downB)
     {
         ugrid_out[smy_Nx]= ugrid_myr_vertB[0] = Cij*ugrid_in[smy_Nx]+Cinj*ugrid_in[smy_Nx-1]+Cijp*ugrid_in[smy_Nx+my_Nx]+Cijn*ugrid_b_horB[smy_Nx]+Cbx*ugrid_in[smy_Nx]*(ugrid_in[smy_Nx-1]-ugrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(ugrid_b_horB[smy_Nx]-ugrid_in[smy_Nx]);
         vgrid_out[smy_Nx]= vgrid_myr_vertB[0] = Cij*vgrid_in[smy_Nx]+Cinj*vgrid_in[smy_Nx-1]+Cijp*vgrid_in[smy_Nx+my_Nx]+Cijn*vgrid_b_horB[smy_Nx]+Cbx*ugrid_in[smy_Nx]*(vgrid_in[smy_Nx-1]-vgrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(vgrid_b_horB[smy_Nx]-vgrid_in[smy_Nx]);
-		cout<<"My rank: "<<my_rank<<" Complex (right) bot corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex (right) bot corner"<<endl;
 	}
     else if (rightB)
     {
         ugrid_out[smy_Nx]= ugrid_myr_vertB[0] = Cij*ugrid_in[smy_Nx]+Cinj*ugrid_in[smy_Nx-1]+Cipj*ugrid_r_vertB[0]+Cijp*ugrid_in[smy_Nx+my_Nx]+Cbx*ugrid_in[smy_Nx]*(ugrid_in[smy_Nx-1]-ugrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(-ugrid_in[smy_Nx]);
         vgrid_out[smy_Nx]= vgrid_myr_vertB[0] = Cij*vgrid_in[smy_Nx]+Cinj*vgrid_in[smy_Nx-1]+Cipj*vgrid_r_vertB[0]+Cijp*vgrid_in[smy_Nx+my_Nx]+Cbx*ugrid_in[smy_Nx]*(vgrid_in[smy_Nx-1]-vgrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(-vgrid_in[smy_Nx]);
-		cout<<"My rank: "<<my_rank<<" Complex right (bot) corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Complex right (bot) corner"<<endl;
 	}
     else
     {
         ugrid_out[smy_Nx]= ugrid_myr_vertB[0] = Cij*ugrid_in[smy_Nx]+Cinj*ugrid_in[smy_Nx-1]+Cijp*ugrid_in[smy_Nx+my_Nx]+Cbx*ugrid_in[smy_Nx]*(ugrid_in[smy_Nx-1]-ugrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(-ugrid_in[smy_Nx]);
         vgrid_out[smy_Nx]= vgrid_myr_vertB[0] = Cij*vgrid_in[smy_Nx]+Cinj*vgrid_in[smy_Nx-1]+Cijp*vgrid_in[smy_Nx+my_Nx]+Cbx*ugrid_in[smy_Nx]*(vgrid_in[smy_Nx-1]-vgrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(-vgrid_in[smy_Nx]);
-		cout<<"My rank: "<<my_rank<<" Grid right bot corner"<<endl;
+//		cout<<"My rank: "<<my_rank<<" Grid right bot corner"<<endl;
 	}
 }
 
@@ -511,6 +526,8 @@ void Burgers::CalculateCenter()
 void Burgers::NextStep()
 {
     nt++;
+	if ((nt%10==0)&&(my_rank==0))
+		cout<<"Step: "<<nt<<"/"<<Nt<<endl;
     //Changing pointers
     if ((nt%2)==0)
     {
@@ -531,12 +548,14 @@ void Burgers::NextStep()
     CalculateCorners();
     CalculateMyBoundaries();
     CalculateCenter();
+	if ((nt%10==0))
+		Energy();
 }
 
 void Burgers::Energy()
 {
 	MPI_Barrier(MPI_COMM_WORLD);
-	cout << "Calculating energy" << endl;
+//	cout << "Calculating energy" << endl;
 	energy=0;
 	for (int j=0;j<my_Ny;j++)
 	{
@@ -544,22 +563,22 @@ void Burgers::Energy()
 		for (int i=0; i<my_Nx; i++)
 			energy+=dx*dy*(pow(ugrid_out[i+j_offset],2)+pow(vgrid_out[i+j_offset],2));
 	}
-	cout << "My rank : " <<my_rank<<" My energy "<<energy<<endl;
+//	cout << "My rank : " <<my_rank<<" My energy "<<energy<<endl;
 	if (my_rank==0)
 	{
 		double m_energy;
 		for (int m=1; m<P; m++)
 		{
-			cout<<"Receiving energy from " <<m<<endl;
+//			cout<<"Receiving energy from " <<m<<endl;
 			MPI_Recv(&m_energy, 1, MPI_DOUBLE, m, 10, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			cout <<"Got energy from "<<m<<endl;
+//			cout <<"Got energy from "<<m<<endl;
 			energy+=m_energy;
 		}
 		cout << "Total Energy:  "<<(energy/2.0)<<endl;
 	}
 	else
 	{
-		cout << "My rank: "<<my_rank<<" I am sending energy"<<endl; 
+//		cout << "My rank: "<<my_rank<<" I am sending energy"<<endl; 
 		MPI_Send(&energy, 1, MPI_DOUBLE, 0, 10, MPI_COMM_WORLD);
 		
 	}
@@ -569,15 +588,16 @@ void Burgers::Energy()
 
 void Burgers::Integrate()
 {
-	cout << "Intergrating with time..." <<endl;
+//	cout << "Intergrating with time..." <<endl;
 //	while (nt<Nt)
-for (int k=0; k<500;k++)
+	for (int k=0; k<2000;k++)
 	{
         NextStep();
 //		ddt(1,1,Nx-1,Ny-1);
 //		Update(1,1,Nx-1,Ny-1);
+		
 	}
-	cout << "Finished." << endl;
+//	cout << "Finished." << endl;
 }
 
 void Burgers::Run()
@@ -618,16 +638,17 @@ void Burgers::WriteToFile()
 	ofstream file0;
 	file0.open("grid.txt", ios::out | ios::trunc);
 	cout.precision(3);
-	cout << "Printing u" <<endl << endl;
+//	cout << "Printing u" <<endl << endl;
+	file0<<full_Nx<<"	"<<full_Ny<<endl;
 	for (int j=full_Ny-1; j>=0; j--)
 	{
 		for (int i=0; i<(full_Nx-1); i++)
 			file0 << fixed<<full_ugrid[i+j*full_Nx]<<"	";
 		file0 << full_ugrid[full_Nx-1+j*full_Nx]<<endl;
 	}
-	cout << "Done printing u" << endl;
-	file0<<endl;
-	cout <<endl<<endl<< "Printing v" <<endl << endl;
+//	cout << "Done printing u" << endl;
+	file0<<full_Nx<<"	"<<full_Ny<<endl;
+//	cout <<endl<<endl<< "Printing v" <<endl << endl;
 	for (int j=full_Ny-1; j>=0; j--)
 	{
 		for (int i=0; i<(full_Nx-1); i++)
@@ -676,17 +697,17 @@ void Burgers::Assemble()
 		//Receive data from each process - coulbd be faster by streamlining the ints
 		for (int m=1; m<P; m++)
 		{
-			cout << "Receiving from: "<< m << endl;
+//			cout << "Receiving from: "<< m << endl;
 			// Latter to single messages - down to two - maybe will be faster -it will be
 			MPI_Recv(&m_Nx, 1, MPI_INT, m, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			MPI_Recv(&m_Ny, 1, MPI_INT, m, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			MPI_Recv(&m_i0, 1, MPI_INT, m, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			MPI_Recv(&m_j0, 1, MPI_INT, m, 3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			m_size=m_Nx*m_Ny;
-			cout << "Still okay" << endl;
+//			cout << "Still okay" << endl;
 			MPI_Recv(m_ugrid, m_size, MPI_DOUBLE, m, 4, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			MPI_Recv(m_vgrid, m_size, MPI_DOUBLE, m, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			cout << "Received everything from: "<<m << " i0: "<<m_i0<< " j0 "<<m_j0<<endl;
+//			cout << "Received everything from: "<<m << " i0: "<<m_i0<< " j0 "<<m_j0<<endl;
 			//Assembling on the full grid
 			for (int j=0; j<m_Ny; j++)
 			{
@@ -698,7 +719,7 @@ void Burgers::Assemble()
 //					cout << "Condition asm "<< (i+m_i0) <<" " <<(j+m_j0)<<"  "<<((double)(m_i0+i)*dx-L/2) <<" "<<((double)(m_j0+j)*dy-L/2)<<endl;
 				}
 			}
-			cout << "Assembled from: "<<m <<endl;
+//			cout << "Assembled from: "<<m <<endl;
 		}
 //		cout<<"Still okay"<<endl;
 		delete[] m_ugrid;
@@ -713,17 +734,17 @@ void Burgers::Assemble()
 //					cout<<"Still ok "<<i<<" "<<j<<endl;
 			}
 		}
-		cout<<"Assembled mine"<<endl;
+//		cout<<"Assembled mine"<<endl;
 	}
 	else //Sending
 	{
-		cout << "My rank: " << my_rank << " Sending. " << endl;
+//		cout << "My rank: " << my_rank << " Sending. " << endl;
 		MPI_Send(&my_Nx, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 		MPI_Send(&my_Ny, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
 		MPI_Send(&my_grid_i0, 1, MPI_INT, 0, 2, MPI_COMM_WORLD);
 		MPI_Send(&my_grid_j0, 1, MPI_INT, 0, 3, MPI_COMM_WORLD);
 		MPI_Send(ugrid_out, (my_Nx*my_Ny), MPI_DOUBLE, 0, 4, MPI_COMM_WORLD);
 		MPI_Send(vgrid_out, (my_Nx*my_Ny), MPI_DOUBLE, 0, 5, MPI_COMM_WORLD);
-		cout << "My rank: " << my_rank << " Sent. " << endl;
+//		cout << "My rank: " << my_rank << " Sent. " << endl;
 	}
 }
