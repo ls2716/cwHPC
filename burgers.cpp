@@ -190,7 +190,7 @@ void Burgers::Initialize()
 		//Updating own boundaries of process 0 - have to be sent at the beginning of each time step
 		ugrid_myr_vertB[j] = ugrid_e[smy_Nx+j_offset];
 		ugrid_myl_vertB[j] = ugrid_e[j_offset];
-		vgrid_myr_vertB[j] = vgrid_e[smy_Nx-1+j_offset];
+		vgrid_myr_vertB[j] = vgrid_e[smy_Nx+j_offset];
 		vgrid_myl_vertB[j] = vgrid_e[j_offset];
 	}
 
@@ -203,7 +203,7 @@ void Burgers::WriteToFile()
 	int full_Nx=Nx+2;
 	int full_Ny=Ny+2;
 	ofstream file0;
-	file0.open("gridCor.txt", ios::out | ios::trunc);
+	file0.open("grid.txt", ios::out | ios::trunc);
 	cout.precision(3);
 	cout << "Printing u" <<endl << endl;
 	for (int j=full_Ny-1; j>=0; j--)
@@ -316,6 +316,18 @@ void Burgers::Assemble()
 }
 
 
+void printB(double* Boun, int len, char w)
+{
+	cout.precision(3);
+	if (w=='h')
+		for (int i=0; i<len; i++)
+			cout<<" h "<<fixed<<Boun[i];
+	else
+		for (int j=len-1; j>=0; j--)
+			cout<<" v "<<fixed<<Boun[j];
+	cout<<endl;
+}
+
 void Burgers::BoundaryUpdate()
 {
     counter=0;
@@ -327,7 +339,9 @@ void Burgers::BoundaryUpdate()
         ierr=MPI_Isend(&vgrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,6,MPI_COMM_WORLD,&send_request[counter]);
         ierr=MPI_Irecv(vgrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,4,MPI_COMM_WORLD,&recv_request[counter]);
         counter++;
+		
     }
+//	MPI_Barrier(MPI_COMM_WORLD);
     if (upB)
     {
         ierr=MPI_Isend(&ugrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,0,MPI_COMM_WORLD,&send_request[counter]);
@@ -336,7 +350,9 @@ void Burgers::BoundaryUpdate()
         ierr=MPI_Isend(&vgrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,4,MPI_COMM_WORLD,&send_request[counter]);
         ierr=MPI_Irecv(vgrid_t_horB,my_Nx,MPI_DOUBLE,my_rank+Px,6,MPI_COMM_WORLD,&recv_request[counter]);
         counter++;
+		
     }
+	MPI_Barrier(MPI_COMM_WORLD);
     if (leftB)
     {
         ierr=MPI_Isend(ugrid_myl_vertB,my_Ny,MPI_DOUBLE, my_rank-1,1,MPI_COMM_WORLD,&send_request[counter]);
@@ -360,6 +376,46 @@ void Burgers::BoundaryUpdate()
     cout << "Updated boundaries" << endl;
 	//Send here
 	MPI_Barrier(MPI_COMM_WORLD);
+//	if (my_rank==2)
+//	{
+//		for (int j=smy_Ny; j>=0; j--)
+//		{
+//			for (int i=0;i<my_Nx; i++)
+//				cout<<" "<<fixed<<vgrid_e[i+j*my_Nx];
+//			cout<<endl;
+//			
+//		}
+//	if (downB)
+//	{
+//		cout<<"My rank: " << my_rank << " Sent down" << endl;
+//		printB(vgrid_in,my_Nx,'h');
+//		cout<<"My rank: " << my_rank << " Received down" << endl;
+//		printB(vgrid_b_horB,my_Nx,'h');
+//	}
+//	if (upB)
+//	{
+//		cout<<"My rank: " << my_rank << " Sent up" << endl;
+//		printB(&vgrid_in[smy_Ny*my_Nx],my_Nx,'h');
+//		cout<<"My rank: " << my_rank << " Received up" << endl;
+//		printB(vgrid_t_horB,my_Nx,'h');
+//	}
+//	MPI_Barrier(MPI_COMM_WORLD);
+//	if (leftB)
+//	{
+//		cout<<"My rank: " << my_rank << " Sent left" << endl;
+//		printB(vgrid_myl_vertB,my_Ny,'v');
+//		cout<<"My rank: " << my_rank << " Received left" << endl;
+//		printB(vgrid_l_vertB,my_Ny,'v');
+//	}
+//	if (rightB)
+//	{
+//		cout<<"My rank: " << my_rank << " Sent right" << endl;
+//		printB(vgrid_myr_vertB,my_Ny,'v');
+//		cout<<"My rank: " << my_rank << " Received right" << endl;
+//		printB(vgrid_r_vertB,my_Ny,'v');
+//	}
+//	}
+//	MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void Burgers::CalculateMyBoundaries()
@@ -598,12 +654,12 @@ void Burgers::NextStep()
 void Burgers::Integrate()
 {
 	cout << "Intergrating with time..." <<endl;
-//	while (nt<Nt)
-//	{
+	while (nt<Nt)
+	{
         NextStep();
 //		ddt(1,1,Nx-1,Ny-1);
 //		Update(1,1,Nx-1,Ny-1);
-//	}
+	}
 	cout << "Finished." << endl;
 }
 
