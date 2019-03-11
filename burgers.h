@@ -17,6 +17,8 @@ public:
     void Run();
 	//void PrintGrid();
 	void WriteToFile(); // Should be put as private
+	void Energy();
+	
 
 
 private:
@@ -126,6 +128,8 @@ private:
     double Cby;
 
     int nt; //current time step
+	
+	double energy; //energy
 
 };
 
