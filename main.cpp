@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 	
 //	cout<< "done"<<endl;
 	b.Run();
-	b.~Burgers();
+	
 //	double* ures = b.GetResU();
 //	//cout << ures[995+1100*m.GetNx()] << endl;
 //	b.PrintGrid();

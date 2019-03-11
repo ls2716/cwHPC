@@ -37,6 +37,7 @@ Burgers::Burgers(Model& m)
     Cijp = c*dt/dy/dy;
     Cbx = b*dt/dx;
     Cby = b*dt/dy;
+	cout << " " << Cij << " " << Cinj << " " << Cipj << " " << Cijn << " " << Cijp << " " << Cbx << " " << Cby << endl;
 
 
     /* Inferring data about the subdomain grid
@@ -98,7 +99,7 @@ Burgers::Burgers(Model& m)
 //Need to release the memory
 Burgers::~Burgers()
 {
-    delete[] ugrid_o;
+  delete[] ugrid_o;
 	delete[] vgrid_o;
 	delete[] ugrid_e;
 	delete[] vgrid_e;
@@ -116,14 +117,14 @@ Burgers::~Burgers()
 	delete[] vgrid_myl_vertB;
 	delete[] full_ugrid;
 	delete[] full_vgrid;
-	delete[] ugrid_in;
-	delete[] ugrid_out;
-	delete[] vgrid_in;
-	delete[] vgrid_out;
-	delete[] urob_pointer;
-	delete[] vrob_pointer;
-	delete[] uout_pointer;
-	delete[] vout_pointer;
+//	delete[] ugrid_in;
+//	delete[] ugrid_out;
+//	delete[] vgrid_in;
+//	delete[] vgrid_out;
+//	delete[] urob_pointer;
+//	delete[] vrob_pointer;
+//	delete[] uout_pointer;
+//	delete[] vout_pointer;
 
 };
 
@@ -173,14 +174,17 @@ void Burgers::Initialize()
 			r=y+x*x;
 			if (r>1)
 			{
+				
 				ugrid_e[i+j_offset]=0.0;
 				vgrid_e[i+j_offset]=0.0;
 			}
 			else
 			{
+//				cout << "Condition "<< (i+my_grid_i0) <<" " <<(j+my_grid_j0)<<"  "<<((double)(my_grid_i0+i)*dx-Lo2) <<" "<<((double)(my_grid_j0+j)*dy-Lo2)<<endl;
 				r = 2*pow(1-r,4)*(4*r+1);
 				ugrid_e[i+j_offset]=r;
 				vgrid_e[i+j_offset]=r;
+//				cout<< "  "<<r <<endl;
 			}
 		}
 		//Updating own boundaries of process 0 - have to be sent at the beginning of each time step
@@ -199,23 +203,26 @@ void Burgers::WriteToFile()
 	int full_Nx=Nx+2;
 	int full_Ny=Ny+2;
 	ofstream file0;
-	file0.open("grid.txt", ios::out | ios::trunc);
-//	cout << "Printing u" <<endl << endl;
-//	for (int j=full_Ny-1; j>=0; j--)
-//	{
-//		for (int i=0; i<(full_Nx-1); i++)
-//			file0 << full_ugrid[i+j*full_Nx]<<"	";
-//		file0 << full_ugrid[full_Nx-1+j*full_Nx]<<endl;
-//	}
-//	cout << "Done printing u" << endl;
-//	cout <<endl<<endl<< "Printing v" <<endl << endl;
-//	for (int j=full_Ny-1; j>=0; j--)
-//	{
-//		for (int i=0; i<(full_Nx-1); i++)
-//			file << full_vgrid[i+j*full_Nx]<<"	";
-//		file << full_vgrid[full_Nx-1+j*full_Nx]<<endl;
-//	}
+	file0.open("gridCor.txt", ios::out | ios::trunc);
+	cout.precision(3);
+	cout << "Printing u" <<endl << endl;
+	for (int j=full_Ny-1; j>=0; j--)
+	{
+		for (int i=0; i<(full_Nx-1); i++)
+			file0 << fixed<<full_ugrid[i+j*full_Nx]<<"	";
+		file0 << full_ugrid[full_Nx-1+j*full_Nx]<<endl;
+	}
+	cout << "Done printing u" << endl;
+	file0<<endl;
+	cout <<endl<<endl<< "Printing v" <<endl << endl;
+	for (int j=full_Ny-1; j>=0; j--)
+	{
+		for (int i=0; i<(full_Nx-1); i++)
+			file0 <<fixed<< full_vgrid[i+j*full_Nx]<<"	";
+		file0 << full_vgrid[full_Nx-1+j*full_Nx]<<endl;
+	}
 	file0.close();
+	cout << "Done printing v" << endl;
 }
 
 //Assembling full grid for final Energy calculation and writing to a file
@@ -223,11 +230,12 @@ void Burgers::Assemble()
 {
 	if (my_rank==0)
 	{
+		cout << "Starting assembly"<<endl;
         //Defining new grid and parameters
 		int full_Nx=Nx+2;
 		int full_Ny=Ny+2;
-		full_ugrid = new double[full_Nx*full_Ny];
-		full_vgrid = new double[full_Nx*full_Ny];
+		full_ugrid = new double[full_Nx*full_Ny+2];
+		full_vgrid = new double[full_Nx*full_Ny+2];
 
         //Setting boundary data - coudl be faster if do it during printing - without mentioning them here
 		for (int j=0; j<full_Ny; j++)
@@ -240,16 +248,18 @@ void Burgers::Assemble()
 			full_ugrid[i] = 0;
 			full_vgrid[i+(full_Ny-1)*full_Nx] = 0;
 		}
-
+		
 		//Parameters of receiving processes
 		int m_Nx;
 		int m_Ny;
 		int m_i0;
 		int m_j0;
 		int m_size;
-		double* m_ugrid = new double[(my_Nx+1)*(my_Ny+1)];
-		double* m_vgrid = new double[(my_Nx+1)*(my_Ny+1)];
-
+		double* m_ugrid = new double[(my_Nx+1)*(my_Ny+1)+1];
+		double* m_vgrid = new double[(my_Nx+1)*(my_Ny+1)+1];
+//		double* m_ugrid;
+//		double* m_vgrid;
+//		cout<<"Okay"<<endl;
 		//Receive data from each process - coulbd be faster by streamlining the ints
 		for (int m=1; m<P; m++)
 		{
@@ -269,21 +279,25 @@ void Burgers::Assemble()
 			{
 				for (int i=0; i<m_Nx; i++)
 				{
-					full_ugrid[(m_i0+i)+(m_j0)*full_Ny+j*m_Ny]=m_ugrid[i+j*m_Ny];
-					full_vgrid[(m_i0+i)+(m_j0)*full_Ny+j*m_Ny]=m_vgrid[i+j*m_Ny];
-					//Something was wrong here
+					full_ugrid[(m_i0+i)+(m_j0)*full_Ny+j*full_Ny]=m_ugrid[i+j*m_Nx];
+					full_vgrid[(m_i0+i)+(m_j0)*full_Ny+j*full_Ny]=m_vgrid[i+j*m_Nx];
+//					if (full_ugrid[(m_i0+i)+(m_j0)*full_Ny+j*full_Ny]>0)
+//					cout << "Condition asm "<< (i+m_i0) <<" " <<(j+m_j0)<<"  "<<((double)(m_i0+i)*dx-L/2) <<" "<<((double)(m_j0+j)*dy-L/2)<<endl;
 				}
 			}
 			cout << "Assembled from: "<<m <<endl;
 		}
+//		cout<<"Still okay"<<endl;
 		delete[] m_ugrid;
-        delete[] m_vgrid;
-		for (int j=0; j<m_Ny; j++)
+		delete[] m_vgrid;
+		for (int j=0; j<my_Ny; j++)
 		{
-			for (int i=0; i<m_Nx; i++)
+			for (int i=0; i<my_Nx; i++)
 			{
-				full_ugrid[(1+i)+full_Ny+j*my_Ny]=ugrid_out[i+j*my_Ny];
-				full_vgrid[(1+i)+full_Ny+j*my_Ny]=vgrid_out[i+j*my_Ny];
+				full_ugrid[(1+i)+full_Ny+j*full_Ny]=ugrid_out[i+j*my_Nx];
+				full_vgrid[(1+i)+full_Ny+j*full_Ny]=vgrid_out[i+j*my_Nx];
+//				if (ugrid_out[i+j*my_Ny]>0)
+//					cout<<"Still ok "<<i<<" "<<j<<endl;
 			}
 		}
 		cout<<"Assembled mine"<<endl;
@@ -344,13 +358,15 @@ void Burgers::BoundaryUpdate()
     ierr=MPI_Waitall(counter,send_request,status);
     ierr=MPI_Waitall(counter,recv_request,status);
     cout << "Updated boundaries" << endl;
+	//Send here
+	MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void Burgers::CalculateMyBoundaries()
 {
     if (downB)
     {
-        for (int i=1;i<(my_Nx-1);i++)
+        for (int i=1;i<(smy_Nx);i++)
         {
             ugrid_out[i] = Cij*ugrid_in[i]+Cinj*ugrid_in[i-1]+Cipj*ugrid_in[i+1]+Cijp*ugrid_in[i+my_Nx]+Cijn*ugrid_b_horB[i]+Cbx*ugrid_in[i]*(ugrid_in[i-1]-ugrid_in[i])+Cby*vgrid_in[i]*(ugrid_b_horB[i]-ugrid_in[i]);
             vgrid_out[i] = Cij*vgrid_in[i]+Cinj*vgrid_in[i-1]+Cipj*vgrid_in[i+1]+Cijp*vgrid_in[i+my_Nx]+Cijn*vgrid_b_horB[i]+Cbx*ugrid_in[i]*(vgrid_in[i-1]-vgrid_in[i])+Cby*vgrid_in[i]*(vgrid_b_horB[i]-vgrid_in[i]);
@@ -358,7 +374,7 @@ void Burgers::CalculateMyBoundaries()
     }
     else
     {
-        for (int i=1;i<(my_Nx-1);i++)
+        for (int i=1;i<(smy_Nx);i++)
         {
             ugrid_out[i] = Cij*ugrid_in[i]+Cinj*ugrid_in[i-1]+Cipj*ugrid_in[i+1]+Cijp*ugrid_in[i+my_Nx]+Cbx*ugrid_in[i]*(ugrid_in[i-1]-ugrid_in[i])+Cby*vgrid_in[i]*(-ugrid_in[i]);
             vgrid_out[i] = Cij*vgrid_in[i]+Cinj*vgrid_in[i-1]+Cipj*vgrid_in[i+1]+Cijp*vgrid_in[i+my_Nx]+Cbx*ugrid_in[i]*(vgrid_in[i-1]-vgrid_in[i])+Cby*vgrid_in[i]*(-vgrid_in[i]);
@@ -428,99 +444,115 @@ void Burgers::CalculateMyBoundaries()
 //TODO - put this into calculation of boundaries
 void Burgers::CalculateCorners()
 {
-
+	cout<<"My rank: "<<my_rank<<" Calculating corners"<<endl;
     //Bottom left
     if (leftB&&downB)
     {
         ugrid_out[0]= ugrid_myl_vertB[0] = Cij*ugrid_in[0]+Cinj*ugrid_l_vertB[0]+Cipj*ugrid_in[1]+Cijp*ugrid_in[my_Nx]+Cijn*ugrid_b_horB[0]+Cbx*ugrid_in[0]*(ugrid_l_vertB[0]-ugrid_in[0])+Cby*vgrid_in[0]*(ugrid_b_horB[0]-ugrid_in[0]);
         vgrid_out[0]= vgrid_myl_vertB[0] = Cij*vgrid_in[0]+Cinj*vgrid_l_vertB[0]+Cipj*vgrid_in[1]+Cijp*vgrid_in[my_Nx]+Cijn*vgrid_b_horB[0]+Cbx*ugrid_in[0]*(vgrid_l_vertB[0]-vgrid_in[0])+Cby*vgrid_in[0]*(vgrid_b_horB[0]-vgrid_in[0]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex left bottom corner"<<endl;
+	}
     else if (leftB)
     {
         ugrid_out[0]= ugrid_myl_vertB[0] = Cij*ugrid_in[0]+Cinj*ugrid_l_vertB[0]+Cipj*ugrid_in[1]+Cijp*ugrid_in[my_Nx]+Cbx*ugrid_in[0]*(ugrid_l_vertB[0]-ugrid_in[0])+Cby*vgrid_in[0]*(-ugrid_in[0]);
         vgrid_out[0]= vgrid_myl_vertB[0] = Cij*vgrid_in[0]+Cinj*vgrid_l_vertB[0]+Cipj*vgrid_in[1]+Cijp*vgrid_in[my_Nx]+Cbx*ugrid_in[0]*(vgrid_l_vertB[0]-vgrid_in[0])+Cby*vgrid_in[0]*(-vgrid_in[0]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex left (bottom)corner"<<endl;
+	}
     else if (downB)
     {
         ugrid_out[0]= ugrid_myl_vertB[0] = Cij*ugrid_in[0]+Cipj*ugrid_in[1]+Cijp*ugrid_in[my_Nx]+Cijn*ugrid_b_horB[0]+Cbx*ugrid_in[0]*(-ugrid_in[0])+Cby*vgrid_in[0]*(ugrid_b_horB[0]-ugrid_in[0]);
         vgrid_out[0]= vgrid_myl_vertB[0] = Cij*vgrid_in[0]+Cipj*vgrid_in[1]+Cijp*vgrid_in[my_Nx]+Cijn*vgrid_b_horB[0]+Cbx*ugrid_in[0]*(-vgrid_in[0])+Cby*vgrid_in[0]*(vgrid_b_horB[0]-vgrid_in[0]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex bottom (left)corner"<<endl;
+	}
     else
     {
         ugrid_out[0]= ugrid_myl_vertB[0] = Cij*ugrid_in[0]+Cipj*ugrid_in[1]+Cijp*ugrid_in[my_Nx]+Cbx*ugrid_in[0]*(-ugrid_in[0])+Cby*vgrid_in[0]*(-ugrid_in[0]);
         vgrid_out[0]= vgrid_myl_vertB[0] = Cij*vgrid_in[0]+Cipj*vgrid_in[1]+Cijp*vgrid_in[my_Nx]+Cbx*ugrid_in[0]*(-vgrid_in[0])+Cby*vgrid_in[0]*(-vgrid_in[0]);
-    }
+		cout<<"My rank: "<<my_rank<<" Grid bottom left corner"<<endl;
+	}
     //Top left
     if (leftB&&upB)
     {
         j_offset=my_Nx*smy_Ny;
         ugrid_out[j_offset]= ugrid_myl_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_l_vertB[smy_Ny]+Cipj*ugrid_in[j_offset+1]+Cijp*ugrid_t_horB[0]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_l_vertB[smy_Ny]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myl_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_l_vertB[smy_Ny]+Cipj*vgrid_in[j_offset+1]+Cijp*vgrid_t_horB[0]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_l_vertB[smy_Ny]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex left top corner"<<endl;
+	}
     else if (leftB)
     {
         j_offset=my_Nx*smy_Ny;
         ugrid_out[j_offset]= ugrid_myl_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_l_vertB[smy_Ny]+Cipj*ugrid_in[j_offset+1]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_l_vertB[smy_Ny]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myl_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_l_vertB[smy_Ny]+Cipj*vgrid_in[j_offset+1]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_l_vertB[smy_Ny]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex left (top) corner"<<endl;
+	}
     else if (upB)
     {
         j_offset=my_Nx*smy_Ny;
         ugrid_out[j_offset]= ugrid_myl_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cipj*ugrid_in[j_offset+1]+Cijp*ugrid_t_horB[0]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myl_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cipj*vgrid_in[j_offset+1]+Cijp*vgrid_t_horB[0]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex (left) top corner"<<endl;
+	}
     else
     {
         j_offset=my_Nx*smy_Ny;
         ugrid_out[j_offset]= ugrid_myl_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cipj*ugrid_in[j_offset+1]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myl_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cipj*vgrid_in[j_offset+1]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-    }
+		cout<<"My rank: "<<my_rank<<" Grid left top corner"<<endl;
+	}
     //Top right
     if (rightB&&upB)
     {
         j_offset = my_Nx*my_Ny-1;
         ugrid_out[j_offset]= ugrid_myr_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cipj*ugrid_r_vertB[smy_Ny]+Cijp*ugrid_t_horB[smy_Nx]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myr_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cipj*vgrid_r_vertB[smy_Ny]+Cijp*vgrid_t_horB[smy_Nx]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex right top corner"<<endl;
+	}
     else if (rightB)
     {
         j_offset = my_Nx*my_Ny-1;
         ugrid_out[j_offset]= ugrid_myr_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cipj*ugrid_r_vertB[smy_Ny]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myr_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cipj*vgrid_r_vertB[smy_Ny]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex right (top) corner"<<endl;
+	}
     else if (upB)
     {
         j_offset = my_Nx*my_Ny-1;
         ugrid_out[j_offset]= ugrid_myr_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cijp*ugrid_t_horB[smy_Nx]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myr_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cijp*vgrid_t_horB[smy_Nx]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex (right) top corner"<<endl;
+	}
     else
     {
         j_offset = my_Nx*my_Ny-1;
         ugrid_out[j_offset]= ugrid_myr_vertB[smy_Ny] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
         vgrid_out[j_offset]= vgrid_myr_vertB[smy_Ny] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
-    }
+		cout<<"My rank: "<<my_rank<<" Grid right top corner"<<endl;
+	}
     //Bottom right
     if (downB&&rightB)
     {
         ugrid_out[smy_Nx]= ugrid_myr_vertB[0] = Cij*ugrid_in[smy_Nx]+Cinj*ugrid_in[smy_Nx-1]+Cipj*ugrid_r_vertB[0]+Cijp*ugrid_in[smy_Nx+my_Nx]+Cijn*ugrid_b_horB[smy_Nx]+Cbx*ugrid_in[smy_Nx]*(ugrid_in[smy_Nx-1]-ugrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(ugrid_b_horB[smy_Nx]-ugrid_in[smy_Nx]);
         vgrid_out[smy_Nx]= vgrid_myr_vertB[0] = Cij*vgrid_in[smy_Nx]+Cinj*vgrid_in[smy_Nx-1]+Cipj*vgrid_r_vertB[0]+Cijp*vgrid_in[smy_Nx+my_Nx]+Cijn*vgrid_b_horB[smy_Nx]+Cbx*ugrid_in[smy_Nx]*(vgrid_in[smy_Nx-1]-vgrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(vgrid_b_horB[smy_Nx]-vgrid_in[smy_Nx]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex right bot corner"<<endl;
+	}
     else if (downB)
     {
         ugrid_out[smy_Nx]= ugrid_myr_vertB[0] = Cij*ugrid_in[smy_Nx]+Cinj*ugrid_in[smy_Nx-1]+Cijp*ugrid_in[smy_Nx+my_Nx]+Cijn*ugrid_b_horB[smy_Nx]+Cbx*ugrid_in[smy_Nx]*(ugrid_in[smy_Nx-1]-ugrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(ugrid_b_horB[smy_Nx]-ugrid_in[smy_Nx]);
         vgrid_out[smy_Nx]= vgrid_myr_vertB[0] = Cij*vgrid_in[smy_Nx]+Cinj*vgrid_in[smy_Nx-1]+Cijp*vgrid_in[smy_Nx+my_Nx]+Cijn*vgrid_b_horB[smy_Nx]+Cbx*ugrid_in[smy_Nx]*(vgrid_in[smy_Nx-1]-vgrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(vgrid_b_horB[smy_Nx]-vgrid_in[smy_Nx]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex (right) bot corner"<<endl;
+	}
     else if (rightB)
     {
         ugrid_out[smy_Nx]= ugrid_myr_vertB[0] = Cij*ugrid_in[smy_Nx]+Cinj*ugrid_in[smy_Nx-1]+Cipj*ugrid_r_vertB[0]+Cijp*ugrid_in[smy_Nx+my_Nx]+Cbx*ugrid_in[smy_Nx]*(ugrid_in[smy_Nx-1]-ugrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(-ugrid_in[smy_Nx]);
         vgrid_out[smy_Nx]= vgrid_myr_vertB[0] = Cij*vgrid_in[smy_Nx]+Cinj*vgrid_in[smy_Nx-1]+Cipj*vgrid_r_vertB[0]+Cijp*vgrid_in[smy_Nx+my_Nx]+Cbx*ugrid_in[smy_Nx]*(vgrid_in[smy_Nx-1]-vgrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(-vgrid_in[smy_Nx]);
-    }
+		cout<<"My rank: "<<my_rank<<" Complex right (bot) corner"<<endl;
+	}
     else
     {
         ugrid_out[smy_Nx]= ugrid_myr_vertB[0] = Cij*ugrid_in[smy_Nx]+Cinj*ugrid_in[smy_Nx-1]+Cijp*ugrid_in[smy_Nx+my_Nx]+Cbx*ugrid_in[smy_Nx]*(ugrid_in[smy_Nx-1]-ugrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(-ugrid_in[smy_Nx]);
         vgrid_out[smy_Nx]= vgrid_myr_vertB[0] = Cij*vgrid_in[smy_Nx]+Cinj*vgrid_in[smy_Nx-1]+Cijp*vgrid_in[smy_Nx+my_Nx]+Cbx*ugrid_in[smy_Nx]*(vgrid_in[smy_Nx-1]-vgrid_in[smy_Nx])+Cby*vgrid_in[smy_Nx]*(-vgrid_in[smy_Nx]);
-    }
+		cout<<"My rank: "<<my_rank<<" Grid right bot corner"<<endl;
+	}
 }
 
 void Burgers::CalculateCenter()
@@ -566,12 +598,12 @@ void Burgers::NextStep()
 void Burgers::Integrate()
 {
 	cout << "Intergrating with time..." <<endl;
-	while (nt<Nt)
-	{
+//	while (nt<Nt)
+//	{
         NextStep();
 //		ddt(1,1,Nx-1,Ny-1);
 //		Update(1,1,Nx-1,Ny-1);
-	}
+//	}
 	cout << "Finished." << endl;
 }
 
@@ -580,11 +612,12 @@ void Burgers::Run()
 	cout<< endl << "Running simulation. " << endl;
 	Initialize();
 //	WriteToFile("out_t_0.txt");
-//	Integrate();
+	Integrate();
 //	WriteToFile("out_t_1.txt");
+	
 	Assemble();
-//	if (my_rank==0)
-//		WriteToFile();
+	if (my_rank==0)
+		WriteToFile();
 	MPI_Barrier(MPI_COMM_WORLD);
 }
 

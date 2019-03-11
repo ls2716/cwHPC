@@ -16,7 +16,7 @@ compile: main.o  model.o burgers.o
 	target
 
 diff: compile
-	mpiexec -np 3 my_prog 1.0 10.0 10 10 400 0 0 0 1 3 1
+	mpiexec -np 1 my_prog 1.0 10.0 21 21 400 0 0 0 1 1 1
 
 advx: compile
 	mpiexec -np 6 my_prog 1.0 10.0 200 200 400 1 0 0 0 3 2
@@ -28,6 +28,6 @@ burg: compile
 	mpiexec -np 1 my_prog 1.0 10.0 200 200 400 1 0.5 1 0.02 3 1
 
 clean:
-	-rm -f *.o my_prog# Clean up (and ignore any errors)
+	-rm -f *.o my_prog   # Clean up (and ignore any errors)
 
 all: diff advx advy burg clean

@@ -71,8 +71,8 @@ void Model::IsValid()
 void Model::ParameterFill()
 {
 	dt=T/Nt;
-	dx=L/Nx;
-    dy=L/Ny;
+	dx=L/(Nx-1);
+    dy=L/(Ny-1);
 	cout << "My rank: "<< my_rank << " I have filled my parameters." << endl;
 }
 
