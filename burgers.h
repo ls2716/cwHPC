@@ -10,31 +10,29 @@
 class Burgers {
 
 public:
+
     Burgers(Model& m);
     ~Burgers();
 
-
-//    void Run();
+    //Methods for setting the simulation and running it
 	void Initialize();
 	void Integrate();
 	void WrapUp();
-	//void PrintGrid();
-	void WriteToFile(); // Should be put as private
 	void Energy();
-	void PrintSubDomain(int mrank);
-	void PrintBound(int mrank,char w);
 
 
 private:
-    //Pointers to the grids odd and even
+
     /* The integration uses two grids to decrease the number of instructions.
     / Using calculation of dudt the integration would have to Go through the whole array twice.
     / Now the update is done in the same step as calculation of dudt.
     */
+    //Subdomains
     double* ugrid_o;
 	double* vgrid_o;
 	double* ugrid_e;
 	double* vgrid_e;
+	//Outer boundaries - received from other processes
 	double* ugrid_t_horB;
     double* vgrid_t_horB;
     double* ugrid_b_horB;
@@ -43,13 +41,14 @@ private:
 	double* ugrid_r_vertB;
 	double* vgrid_l_vertB;
 	double* vgrid_r_vertB;
+	//Own boundaries to send
 	double* ugrid_myl_vertB;
 	double* ugrid_myr_vertB;
 	double* vgrid_myr_vertB;
 	double* vgrid_myl_vertB;
 	double* full_ugrid;
 	double* full_vgrid;
-	//Pointer for calculations
+	//Pointers for calculations
 	double* ugrid_in;
 	double* vgrid_in;
 	double* ugrid_out;
@@ -60,19 +59,17 @@ private:
 	double* vout_pointer;
 
     //Methods for performing simulation
-
-
 	void NextStep();
     void BoundaryUpdate();
     void CalculateMyBoundaries();
     void CalculateCorners();
     void CalculateCenter();
 
+    //Method for writing to a file
+    void WriteToFile();
 
-//	void ddt(int is, int js, int ie, int je);
-//	void Update(int is, int js, int ie, int je);
 
-    // Assembly of full grid
+    //Method for assembling full grid
 	void Assemble();
 
     //Same parameters as model has
@@ -104,18 +101,18 @@ private:
     int j_offset;
     int cor;
 
-    //Boundary type booleans
+    //Boundary type booleans - true means there will be communication at the boundary
     bool upB=false;
     bool downB=false;
     bool rightB=false;
     bool leftB=false;
 
-
+    //Statuses for communications using non-blocking communicators
     MPI_Status   status[8];
     MPI_Request send_request[8],recv_request[8];
-    int          ierr;
-    int num_B=0;;
-    int counter;
+    int ierr;
+    //Counter for counting number of boundaries that process need to communicate
+    int Bcounter;
 
     //Physics
     double ax;
@@ -132,7 +129,7 @@ private:
     double Cby;
 
     int nt; //current time step
-	
+
 	double energy; //energy
 
 };
