@@ -250,7 +250,7 @@ void Burgers::BoundaryUpdate()
         counter++;
 		
     }
-	MPI_Barrier(MPI_COMM_WORLD);
+//	MPI_Barrier(MPI_COMM_WORLD);
     if (leftB)
     {
         ierr=MPI_Isend(ugrid_myl_vertB,my_Ny,MPI_DOUBLE, my_rank-1,1,MPI_COMM_WORLD,&send_request[counter]);
@@ -271,49 +271,6 @@ void Burgers::BoundaryUpdate()
     }
     ierr=MPI_Waitall(counter,send_request,status);
     ierr=MPI_Waitall(counter,recv_request,status);
-//    cout << "Updated boundaries" << endl;
-	//Send here
-	MPI_Barrier(MPI_COMM_WORLD);
-//	if (my_rank==2)
-//	{
-//		for (int j=smy_Ny; j>=0; j--)
-//		{
-//			for (int i=0;i<my_Nx; i++)
-//				cout<<" "<<fixed<<vgrid_e[i+j*my_Nx];
-//			cout<<endl;
-//			
-//		}
-//	if (downB)
-//	{
-//		cout<<"My rank: " << my_rank << " Sent down" << endl;
-//		printB(vgrid_in,my_Nx,'h');
-//		cout<<"My rank: " << my_rank << " Received down" << endl;
-//		printB(vgrid_b_horB,my_Nx,'h');
-//	}
-//	if (upB)
-//	{
-//		cout<<"My rank: " << my_rank << " Sent up" << endl;
-//		printB(&vgrid_in[smy_Ny*my_Nx],my_Nx,'h');
-//		cout<<"My rank: " << my_rank << " Received up" << endl;
-//		printB(vgrid_t_horB,my_Nx,'h');
-//	}
-//	MPI_Barrier(MPI_COMM_WORLD);
-//	if (leftB)
-//	{
-//		cout<<"My rank: " << my_rank << " Sent left" << endl;
-//		printB(vgrid_myl_vertB,my_Ny,'v');
-//		cout<<"My rank: " << my_rank << " Received left" << endl;
-//		printB(vgrid_l_vertB,my_Ny,'v');
-//	}
-//	if (rightB)
-//	{
-//		cout<<"My rank: " << my_rank << " Sent right" << endl;
-//		printB(vgrid_myr_vertB,my_Ny,'v');
-//		cout<<"My rank: " << my_rank << " Received right" << endl;
-//		printB(vgrid_r_vertB,my_Ny,'v');
-//	}
-//	}
-//	MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void Burgers::CalculateMyBoundaries()
@@ -509,6 +466,8 @@ void Burgers::CalculateCorners()
 	}
 }
 
+
+//Calculating the inners of the subdomain
 void Burgers::CalculateCenter()
 {
     for (int j=1;j<smy_Ny;j++)
@@ -523,11 +482,12 @@ void Burgers::CalculateCenter()
     }
 }
 
+//Invoking Next Step
 void Burgers::NextStep()
 {
     nt++;
-	if ((nt%10==0)&&(my_rank==0))
-		cout<<"Step: "<<nt<<"/"<<Nt<<endl;
+//	if ((nt%10==0)&&(my_rank==0))
+//		cout<<"Step: "<<nt<<"/"<<Nt<<endl;
     //Changing pointers
     if ((nt%2)==0)
     {
@@ -545,17 +505,18 @@ void Burgers::NextStep()
     }
     //Setting boundaries
     BoundaryUpdate();
+	//Calculating corners
     CalculateCorners();
+	//Calculating boundaries
     CalculateMyBoundaries();
+	//Clculating inner points
     CalculateCenter();
-	if ((nt%10==0))
-		Energy();
+
 }
 
 void Burgers::Energy()
 {
 	MPI_Barrier(MPI_COMM_WORLD);
-//	cout << "Calculating energy" << endl;
 	energy=0;
 	for (int j=0;j<my_Ny;j++)
 	{
@@ -563,24 +524,19 @@ void Burgers::Energy()
 		for (int i=0; i<my_Nx; i++)
 			energy+=dx*dy*(pow(ugrid_out[i+j_offset],2)+pow(vgrid_out[i+j_offset],2));
 	}
-//	cout << "My rank : " <<my_rank<<" My energy "<<energy<<endl;
 	if (my_rank==0)
 	{
 		double m_energy;
 		for (int m=1; m<P; m++)
 		{
-//			cout<<"Receiving energy from " <<m<<endl;
 			MPI_Recv(&m_energy, 1, MPI_DOUBLE, m, 10, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-//			cout <<"Got energy from "<<m<<endl;
 			energy+=m_energy;
 		}
 		cout << "Total Energy:  "<<(energy/2.0)<<endl;
 	}
 	else
 	{
-//		cout << "My rank: "<<my_rank<<" I am sending energy"<<endl; 
 		MPI_Send(&energy, 1, MPI_DOUBLE, 0, 10, MPI_COMM_WORLD);
-		
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
 }
@@ -588,26 +544,15 @@ void Burgers::Energy()
 
 void Burgers::Integrate()
 {
-//	cout << "Intergrating with time..." <<endl;
-//	while (nt<Nt)
-	for (int k=0; k<2000;k++)
+	while (nt<Nt)
 	{
-        NextStep();
-//		ddt(1,1,Nx-1,Ny-1);
-//		Update(1,1,Nx-1,Ny-1);
-		
+        NextStep();		
 	}
-//	cout << "Finished." << endl;
 }
 
-void Burgers::Run()
+
+void Burgers::WrapUp()
 {
-	cout<< endl << "Running simulation. " << endl;
-	Initialize();
-//	WriteToFile("out_t_0.txt");
-	Integrate();
-//	WriteToFile("out_t_1.txt");
-	
 	Assemble();
 	MPI_Barrier(MPI_COMM_WORLD);
 	Energy();
@@ -615,9 +560,6 @@ void Burgers::Run()
 		WriteToFile();
 	MPI_Barrier(MPI_COMM_WORLD);
 }
-
-
-
 
 
 

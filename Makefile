@@ -15,19 +15,34 @@ compile: main.o  model.o burgers.o
 .PHONY: clean # Specify that ’clean’ is not a real file
 	target
 
+.PHONY: cleaner
+	target
+
 diff: compile
-	mpiexec -np 9 my_prog 1.0 10.0 21 21 4000 0 0 0 1 3 3
+	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 0 0 0 1 4 4
 
 advx: compile
-	mpiexec -np 1 my_prog 1.0 10.0 21 21 400 1 0 0 0 1 1
+	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0 0 0 4 4
 
 advy: compile
-	mpiexec -np 1 my_prog 1.0 10.0 21 21 400 0 1 0 0 1 1
+	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 0 1 0 0 4 4
 
 burg: compile
 	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0.5 1 0.02 4 4
 
 clean:
-	-rm -f *.o my_prog   # Clean up (and ignore any errors)
+	rm -f *.o my_prog   # Clean up (and ignore any errors)
+
+cleaner:
+	rm -r *.er
 
 all: diff advx advy burg clean
+
+padvx: compile
+	collect -o initial.er mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0 0 0 4 4
+
+anadvx: padvx 
+	analyzer initial.er
+
+ANadvx: anadvx cleaner
+	

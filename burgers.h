@@ -14,7 +14,10 @@ public:
     ~Burgers();
 
 
-    void Run();
+//    void Run();
+	void Initialize();
+	void Integrate();
+	void WrapUp();
 	//void PrintGrid();
 	void WriteToFile(); // Should be put as private
 	void Energy();
@@ -57,8 +60,8 @@ private:
 	double* vout_pointer;
 
     //Methods for performing simulation
-	void Initialize();
-	void Integrate();
+
+
 	void NextStep();
     void BoundaryUpdate();
     void CalculateMyBoundaries();

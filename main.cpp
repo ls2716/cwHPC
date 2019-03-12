@@ -10,25 +10,33 @@ int main(int argc, char* argv[])
 {
 	MPI_Init(&argc, &argv);
 	
+	//Creating Model
     Model m(argc, argv);
 	
-	//cout << "Still okay" << endl;
-//	for (int i=0; i<argc; i++)
-//		cout<<argv[i]<<endl;
-    //m.PrintParameters();
+	//Creating simulation
 	Burgers b(m);
 	
-//	cout<< "done"<<endl;
-	b.Run();
-//	b.PrintSubDomain(1);
-//	b.PrintBound(1,'r');
+	//Initialising the simulation
+	b.Initialize();
 	
-//	double* ures = b.GetResU();
-//	//cout << ures[995+1100*m.GetNx()] << endl;
-//	b.PrintGrid();
-//	//b.WriteToFile("out_t_1.txt");
-//	b.~Burgers();
-	cout << "Finished"<<endl;
+	//Starting the timer
+	typedef std::chrono::high_resolution_clock hrc;
+    typedef std::chrono::milliseconds ms;
+    hrc::time_point start = hrc::now();
+	
+	//Intergrating with time
+	b.Integrate();
+
+	//Stopping the timer and printing the duration
+	hrc::time_point end = hrc::now();
+	chrono::duration<double> elapsed_seconds = end-start;
+	
+	cout << "Time elapsed: "<<elapsed_seconds.count()<<"s"<<endl;
+	
+	//Wrapping up - Getting the energy and printing it
+	b.WrapUp();
+	
+//	cout << "Finished"<<endl;
 	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_Finalize();
     return 0;
