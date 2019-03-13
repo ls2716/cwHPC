@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <regex>
 #include <mpi.h>
 
 class Model {
@@ -11,10 +12,7 @@ class Model {
 		Model(int argc, char* argv[]);
         ~Model();
 
-        //Parameter print
-        void PrintParameters();
-        //Validity check
-        void IsValid();
+        
 
         //Getters
         double GetL()      const { return L; }
@@ -39,10 +37,20 @@ class Model {
 		//Parsing the parameters from program arguments
 		void ParseParameters(int argc, char* argv[]);
 
-		//Check if parameters are valid
-        void ValidateParameters();
+//		Check if parameters are valid
+//        void ValidateParameters();
+		
+		
+		//Parameter print
+        void PrintParameters();
+        //Validity checks
+        void IsValidVal();
+		void IsValidInp(int argc, char* argv[]);
+		
         //Filing rest of the parameters
         void ParameterFill();
+		
+		
 
         //Numerics
         double L;

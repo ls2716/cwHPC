@@ -19,7 +19,7 @@ compile: main.o  model.o burgers.o
 	target
 
 diff: compile
-	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 0 0 0 1 4 4
+	mpiexec -np 16 my_prog 1.0 10.0 21 21 4000 0 0 0 1 4 4
 
 advx: compile
 	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0 0 0 4 4

@@ -172,51 +172,6 @@ void Burgers::Initialize()
 
 void Burgers::BoundaryUpdate()
 {
-    counter=0;
-    if (downB)
-    {
-        ierr=MPI_Isend(&ugrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,2,MPI_COMM_WORLD,&send_request[counter]);
-        ierr=MPI_Irecv(ugrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,0,MPI_COMM_WORLD,&recv_request[counter]);
-        counter++;
-        ierr=MPI_Isend(&vgrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,6,MPI_COMM_WORLD,&send_request[counter]);
-        ierr=MPI_Irecv(vgrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,4,MPI_COMM_WORLD,&recv_request[counter]);
-        counter++;
-
-    }
-    if (upB)
-    {
-        ierr=MPI_Isend(&ugrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,0,MPI_COMM_WORLD,&send_request[counter]);
-        ierr=MPI_Irecv(ugrid_t_horB,my_Nx,MPI_DOUBLE,my_rank+Px,2,MPI_COMM_WORLD,&recv_request[counter]);
-        counter++;
-        ierr=MPI_Isend(&vgrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,4,MPI_COMM_WORLD,&send_request[counter]);
-        ierr=MPI_Irecv(vgrid_t_horB,my_Nx,MPI_DOUBLE,my_rank+Px,6,MPI_COMM_WORLD,&recv_request[counter]);
-        counter++;
-
-    }
-    if (leftB)
-    {
-        ierr=MPI_Isend(ugrid_myl_vertB,my_Ny,MPI_DOUBLE, my_rank-1,1,MPI_COMM_WORLD,&send_request[counter]);
-        ierr=MPI_Irecv(ugrid_l_vertB,my_Ny,MPI_DOUBLE,my_rank-1,3,MPI_COMM_WORLD,&recv_request[counter]);
-        counter++;
-        ierr=MPI_Isend(vgrid_myl_vertB,my_Ny,MPI_DOUBLE, my_rank-1,5,MPI_COMM_WORLD,&send_request[counter]);
-        ierr=MPI_Irecv(vgrid_l_vertB,my_Ny,MPI_DOUBLE,my_rank-1,7,MPI_COMM_WORLD,&recv_request[counter]);
-        counter++;
-    }
-    if (rightB)
-    {
-        ierr=MPI_Isend(ugrid_myr_vertB,my_Ny,MPI_DOUBLE, my_rank+1,3,MPI_COMM_WORLD,&send_request[counter]);
-        ierr=MPI_Irecv(ugrid_r_vertB,my_Ny,MPI_DOUBLE,my_rank+1,1,MPI_COMM_WORLD,&recv_request[counter]);
-        counter++;
-        ierr=MPI_Isend(vgrid_myr_vertB,my_Ny,MPI_DOUBLE, my_rank+1,7,MPI_COMM_WORLD,&send_request[counter]);
-        ierr=MPI_Irecv(vgrid_r_vertB,my_Ny,MPI_DOUBLE,my_rank+1,5,MPI_COMM_WORLD,&recv_request[counter]);
-        counter++;
-    }
-    ierr=MPI_Waitall(counter,send_request,status);
-    ierr=MPI_Waitall(counter,recv_request,status);
-}
-
-void Burgers::BoundaryUpdateFast()
-{
     Bcounter=0;
     if (downB)
     {
@@ -259,6 +214,51 @@ void Burgers::BoundaryUpdateFast()
     ierr=MPI_Waitall(Bcounter,send_request,status);
     ierr=MPI_Waitall(Bcounter,recv_request,status);
 }
+//
+//void Burgers::BoundaryUpdateFast()
+//{
+//    Bcounter=0;
+//    if (downB)
+//    {
+//        ierr=MPI_Isend(&ugrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,2,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(ugrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,0,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+//        ierr=MPI_Isend(&vgrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,6,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(vgrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,4,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+//
+//    }
+//    if (upB)
+//    {
+//        ierr=MPI_Isend(&ugrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,0,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(ugrid_t_horB,my_Nx,MPI_DOUBLE,my_rank+Px,2,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+//        ierr=MPI_Isend(&vgrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,4,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(vgrid_t_horB,my_Nx,MPI_DOUBLE,my_rank+Px,6,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+//
+//    }
+//    if (leftB)
+//    {
+//        ierr=MPI_Isend(ugrid_myl_vertB,my_Ny,MPI_DOUBLE, my_rank-1,1,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(ugrid_l_vertB,my_Ny,MPI_DOUBLE,my_rank-1,3,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+//        ierr=MPI_Isend(vgrid_myl_vertB,my_Ny,MPI_DOUBLE, my_rank-1,5,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(vgrid_l_vertB,my_Ny,MPI_DOUBLE,my_rank-1,7,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+//    }
+//    if (rightB)
+//    {
+//        ierr=MPI_Isend(ugrid_myr_vertB,my_Ny,MPI_DOUBLE, my_rank+1,3,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(ugrid_r_vertB,my_Ny,MPI_DOUBLE,my_rank+1,1,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+//        ierr=MPI_Isend(vgrid_myr_vertB,my_Ny,MPI_DOUBLE, my_rank+1,7,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(vgrid_r_vertB,my_Ny,MPI_DOUBLE,my_rank+1,5,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+//    }
+//    ierr=MPI_Waitall(Bcounter,send_request,status);
+//    ierr=MPI_Waitall(Bcounter,recv_request,status);
+//}
 
 
 
