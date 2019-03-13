@@ -45,4 +45,12 @@ anadvx: padvx
 	analyzer initial3.er
 
 ANadvx: anadvx cleaner
-	
+
+avxTest.o: avxTest.cpp
+	mpicxx -mavx -mavx2 -mfma -std=c++11 -Wall -o avxTest.o -c avxTest.cpp
+
+avxComp:  avxTest.o
+	mpicxx -o avxProg avxTest.o
+
+avx: avxComp
+	mpiexec -np 1 avxProg
