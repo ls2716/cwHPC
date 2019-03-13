@@ -13,26 +13,26 @@ int main(int argc, char* argv[])
 	//Creating Model to parse parameters
     Model m(argc, argv);
 
-	//Creating simulation class
+//	Creating simulation class
 	Burgers b(m);
 
-	//Initialising the simulation
+//	Initialising the simulation
 	b.Initialize();
 
-	//Starting the timer
+//	Starting the timer
 	typedef std::chrono::high_resolution_clock hrc;
     typedef std::chrono::milliseconds ms;
     hrc::time_point start = hrc::now();
 
-	//Integrating with time
+//	Integrating with time
 	b.Integrate();
 
-	//Stopping the timer and printing the duration
+//	Stopping the timer and printing the duration
 	hrc::time_point end = hrc::now();
 	chrono::duration<double> elapsed_seconds = end-start;
 
 	cout << "Time elapsed: "<<elapsed_seconds.count()<<"s for normal boundary"<<endl;
-	
+	b.WrapUp();
 //	b.~Burgers();
 	cout<<"Got here"<<endl;
 	Burgers b2(m);
@@ -56,8 +56,7 @@ int main(int argc, char* argv[])
 //	
 //	cout<<"Got here"<<endl;
 	//Wrapping up - Getting the energy and printing it to file "grid.txt"
-//	b2.WrapUp();
-	MPI_Barrier(MPI_COMM_WORLD);
+	b2.WrapUp();
 //	b2.~Burgers();
 	MPI_Barrier(MPI_COMM_WORLD);
 	cout << "Got here2" <<endl;

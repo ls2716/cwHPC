@@ -1,7 +1,0 @@
-### Start Wed Mar 13 16:31:18 2019
-# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial3.er/_x10.er/er_archive.log /home/ls2716/cwHPC/initial3.er/_x10.er
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_state_staged_hnp.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_state_staged_hnp.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_oob_tcp.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_oob_tcp.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_routed_debruijn.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_routed_debruijn.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_allocator_bucket.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_allocator_bucket.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_coll_libnbc.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_coll_libnbc.so_c125S9HKbgb'

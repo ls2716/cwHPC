@@ -1,5 +1,0 @@
-### Start Wed Mar 13 16:04:49 2019
-# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial2.er/_x6.er/er_archive.log /home/ls2716/cwHPC/initial2.er/_x6.er
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so.20.0.1'  to `/home/ls2716/cwHPC/initial2.er/archives/libmpi_cxx.so.20.0.1_G6zcWprHF51'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_patcher_overwrite.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_patcher_overwrite.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_sec_basic.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_sec_basic.so_c125S9HKbgb'

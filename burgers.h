@@ -80,6 +80,7 @@ private:
 
     //Method for assembling full grid
 	void Assemble();
+	void Assemble2();
 
     //Same parameters as model has
     //Numerics global

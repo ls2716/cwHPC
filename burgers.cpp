@@ -224,6 +224,13 @@ void Burgers::Initialize()
 		vgrid_myr_vertB[j] = vgrid_e[smy_Nx+j_offset];
 		vgrid_myl_vertB[j] = vgrid_e[j_offset];
 	}
+	for (int i=0; i<my_Nx; i++)
+	{
+		ugrid_myt_horB[i] = ugrid_e[i+smy_Ny*my_Nx];
+		ugrid_myb_horB[i] = ugrid_e[i];
+		vgrid_myt_horB[i] = vgrid_e[i+smy_Ny*my_Nx];
+		vgrid_myb_horB[i] = vgrid_e[i];
+	}
 	cout << "Grid successfully initialized" <<endl;
 }
 
@@ -579,6 +586,9 @@ void Burgers::CalculateCorners()
 }
 
 
+
+
+//Works for both
 //Calculating the inners of the subdomain
 void Burgers::CalculateCenter()
 {
@@ -661,8 +671,8 @@ void Burgers::Energy()
 //Intergrating
 void Burgers::Integrate()
 {
-	while (nt<Nt)
-//	while (nt<200)
+//	while (nt<Nt)
+	while (nt<1)
 	{
         NextStep();
 	}
@@ -671,7 +681,10 @@ void Burgers::Integrate()
 
 void Burgers::WrapUp()
 {
-	Assemble();
+	if (Bon)
+		Assemble2();
+	else
+		Assemble();
 	MPI_Barrier(MPI_COMM_WORLD);
 	Energy();
 	if (my_rank==0)
@@ -693,7 +706,10 @@ void Burgers::WriteToFile()
 	int full_Nx=Nx+2;
 	int full_Ny=Ny+2;
 	ofstream file0;
-	file0.open("grid.txt", ios::out | ios::trunc);
+	if (Bon)
+		file0.open("gridBon.txt", ios::out | ios::trunc);
+	else
+		file0.open("grid.txt", ios::out | ios::trunc);
 	cout.precision(3);
 //	cout << "Printing u" <<endl << endl;
 	file0<<full_Nx<<"	"<<full_Ny<<endl;
@@ -802,6 +818,98 @@ void Burgers::Assemble()
 		MPI_Send(&my_grid_j0, 1, MPI_INT, 0, 3, MPI_COMM_WORLD);
 		MPI_Send(ugrid_out, (my_Nx*my_Ny), MPI_DOUBLE, 0, 4, MPI_COMM_WORLD);
 		MPI_Send(vgrid_out, (my_Nx*my_Ny), MPI_DOUBLE, 0, 5, MPI_COMM_WORLD);
+//		cout << "My rank: " << my_rank << " Sent. " << endl;
+	}
+}
+
+
+void Burgers::Assemble2()
+{
+	if (my_rank==0)
+	{
+		cout << "Starting assembly2"<<endl;
+        //Defining new grid and parameters
+		int full_Nx=Nx+2;
+		int full_Ny=Ny+2;
+		full_ugrid = new double[full_Nx*full_Ny+2];
+		full_vgrid = new double[full_Nx*full_Ny+2];
+
+        //Setting boundary data - coudl be faster if do it during printing - without mentioning them here
+		for (int j=0; j<full_Ny; j++)
+		{
+			full_ugrid[j*full_Nx] = 0;
+			full_vgrid[j*full_Nx+full_Nx] = 0;
+		}
+		for (int i=0; i<full_Nx; i++)
+		{
+			full_ugrid[i] = 0;
+			full_vgrid[i+(full_Ny-1)*full_Nx] = 0;
+		}
+
+		//Parameters of receiving processes
+		int m_Nx;
+		int m_Ny;
+		int m_i0;
+		int m_j0;
+		int m_size;
+		double* m_ugrid = new double[(my_Nx+1)*(my_Ny+1)*2+6];
+		double* m_vgrid;
+		cout << "Creaated m_grid"<<endl;
+//		double* m_ugrid;
+//		double* m_vgrid;
+//		cout<<"Okay"<<endl;
+		//Receive data from each process - coulbd be faster by streamlining the ints
+		for (int m=1; m<P; m++)
+		{
+			cout << "Receiving from: "<< m << endl;
+			// Latter to single messages - down to two - maybe will be faster -it will be
+			MPI_Recv(&m_Nx, 1, MPI_INT, m, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Recv(&m_Ny, 1, MPI_INT, m, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Recv(&m_i0, 1, MPI_INT, m, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Recv(&m_j0, 1, MPI_INT, m, 3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			m_size=m_Nx*m_Ny;
+			m_vgrid = &m_ugrid[m_size];
+//			cout << "Still okay" << endl;
+			MPI_Recv(m_ugrid, m_size*2, MPI_DOUBLE, m, 4, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+//			MPI_Recv(m_vgrid, m_size, MPI_DOUBLE, m, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			cout << "Received everything from: "<<m << " i0: "<<m_i0<< " j0 "<<m_j0<<endl;
+			//Assembling on the full grid
+			for (int j=0; j<m_Ny; j++)
+			{
+				for (int i=0; i<m_Nx; i++)
+				{
+					full_ugrid[(m_i0+i)+(m_j0)*full_Ny+j*full_Ny]=m_ugrid[i+j*m_Nx];
+					full_vgrid[(m_i0+i)+(m_j0)*full_Ny+j*full_Ny]=m_vgrid[i+j*m_Nx];
+//					if (full_ugrid[(m_i0+i)+(m_j0)*full_Ny+j*full_Ny]>0)
+//					cout << "Condition asm "<< (i+m_i0) <<" " <<(j+m_j0)<<"  "<<((double)(m_i0+i)*dx-L/2) <<" "<<((double)(m_j0+j)*dy-L/2)<<endl;
+				}
+			}
+			cout << "Assembled from: "<<m <<endl;
+		}
+//		cout<<"Still okay"<<endl;
+		delete[] m_ugrid;
+//		delete[] m_vgrid;
+		for (int j=0; j<my_Ny; j++)
+		{
+			for (int i=0; i<my_Nx; i++)
+			{
+				full_ugrid[(1+i)+full_Ny+j*full_Ny]=ugrid_out[i+j*my_Nx];
+				full_vgrid[(1+i)+full_Ny+j*full_Ny]=vgrid_out[i+j*my_Nx];
+//				if (ugrid_out[i+j*my_Ny]>0)
+//					cout<<"Still ok "<<i<<" "<<j<<endl;
+			}
+		}
+//		cout<<"Assembled mine"<<endl;
+	}
+	else //Sending
+	{
+//		cout << "My rank: " << my_rank << " Sending. " << endl;
+		MPI_Send(&my_Nx, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+		MPI_Send(&my_Ny, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
+		MPI_Send(&my_grid_i0, 1, MPI_INT, 0, 2, MPI_COMM_WORLD);
+		MPI_Send(&my_grid_j0, 1, MPI_INT, 0, 3, MPI_COMM_WORLD);
+		MPI_Send(ugrid_out, (my_Nx*my_Ny)*2, MPI_DOUBLE, 0, 4, MPI_COMM_WORLD);
+//		MPI_Send(vgrid_out, (my_Nx*my_Ny), MPI_DOUBLE, 0, 5, MPI_COMM_WORLD);
 //		cout << "My rank: " << my_rank << " Sent. " << endl;
 	}
 }

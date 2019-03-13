@@ -1,9 +1,0 @@
-### Start Wed Mar 13 16:04:49 2019
-# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial2.er/_x2.er/er_archive.log /home/ls2716/cwHPC/initial2.er/_x2.er
-Copying `/usr/lib/x86_64-linux-gnu/hwloc/hwloc_pci.so'  to `/home/ls2716/cwHPC/initial2.er/archives/hwloc_pci.so_IicRzkXVc9a'
-Copying `/usr/lib/x86_64-linux-gnu/libicui18n.so.57.1'  to `/home/ls2716/cwHPC/initial2.er/archives/libicui18n.so.57.1_dnWuQRcLhw9'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_routed_debruijn.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_routed_debruijn.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_btl_sm.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_btl_sm.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_coll_sync.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_coll_sync.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_osc_rdma.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_osc_rdma.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_osc_pt2pt.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_osc_pt2pt.so_c125S9HKbgb'

@@ -1,4 +1,0 @@
-### Start Wed Mar 13 16:31:18 2019
-# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial3.er/_x3.er/er_archive.log /home/ls2716/cwHPC/initial3.er/_x3.er
-Copying `/usr/lib/x86_64-linux-gnu/librdmacm.so.1.0.0'  to `/home/ls2716/cwHPC/initial3.er/archives/librdmacm.so.1.0.0_dnWuQRcLhw9'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/libmca_common_libfabric.so.20.0.0'  to `/home/ls2716/cwHPC/initial3.er/archives/libmca_common_libfabric.so.20.0.0_G6zcWprHF51'

@@ -1,8 +1,0 @@
-### Start Wed Mar 13 16:31:18 2019
-# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial3.er/_x8.er/er_archive.log /home/ls2716/cwHPC/initial3.er/_x8.er
-Copying `/lib/x86_64-linux-gnu/libgcc_s.so.1'  to `/home/ls2716/cwHPC/initial3.er/archives/libgcc_s.so.1_XLwlkF_Wwof'
-Copying `/lib/x86_64-linux-gnu/ld-2.24.so'  to `/home/ls2716/cwHPC/initial3.er/archives/ld-2.24.so_XLwlkF_Wwof'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_shmem_sysv.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_shmem_sysv.so_c125S9HKbgb'
-Copying `/lib/x86_64-linux-gnu/liblzma.so.5.2.2'  to `/home/ls2716/cwHPC/initial3.er/archives/liblzma.so.5.2.2_XLwlkF_Wwof'
-Copying `/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.4'  to `/home/ls2716/cwHPC/initial3.er/archives/libxml2.so.2.9.4_dnWuQRcLhw9'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/libmca_common_verbs.so.20.0.0'  to `/home/ls2716/cwHPC/initial3.er/archives/libmca_common_verbs.so.20.0.0_G6zcWprHF51'

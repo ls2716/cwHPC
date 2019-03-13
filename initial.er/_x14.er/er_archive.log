@@ -1,8 +1,0 @@
-### Start Wed Mar 13 15:57:12 2019
-# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial.er/_x14.er/er_archive.log /home/ls2716/cwHPC/initial.er/_x14.er
-Copying `/usr/lib/x86_64-linux-gnu/libibverbs.so.1.0.0'  to `/home/ls2716/cwHPC/initial.er/archives/libibverbs.so.1.0.0_dnWuQRcLhw9'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_routed_debruijn.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_routed_debruijn.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/librdmacm.so.1.0.0'  to `/home/ls2716/cwHPC/initial.er/archives/librdmacm.so.1.0.0_dnWuQRcLhw9'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_coll_sm.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_coll_sm.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_coll_tuned.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_coll_tuned.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_coll_libnbc.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_coll_libnbc.so_c125S9HKbgb'

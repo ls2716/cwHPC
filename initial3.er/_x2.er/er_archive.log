@@ -1,8 +1,0 @@
-### Start Wed Mar 13 16:31:18 2019
-# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial3.er/_x2.er/er_archive.log /home/ls2716/cwHPC/initial3.er/_x2.er
-Copying `/lib/x86_64-linux-gnu/libutil-2.24.so'  to `/home/ls2716/cwHPC/initial3.er/archives/libutil-2.24.so_XLwlkF_Wwof'
-Copying `/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1'  to `/home/ls2716/cwHPC/initial3.er/archives/libpciaccess.so.0.11.1_dnWuQRcLhw9'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_state_orted.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_state_orted.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_state_hnp.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_state_hnp.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_errmgr_default_app.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_errmgr_default_app.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/libibverbs.so.1.0.0'  to `/home/ls2716/cwHPC/initial3.er/archives/libibverbs.so.1.0.0_dnWuQRcLhw9'

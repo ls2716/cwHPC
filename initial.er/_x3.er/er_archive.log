@@ -1,7 +1,0 @@
-### Start Wed Mar 13 15:57:12 2019
-# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial.er/_x3.er/er_archive.log /home/ls2716/cwHPC/initial.er/_x3.er
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_pmix_pmix112.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_pmix_pmix112.so_c125S9HKbgb'
-Copying `/lib/x86_64-linux-gnu/liblzma.so.5.2.2'  to `/home/ls2716/cwHPC/initial.er/archives/liblzma.so.5.2.2_XLwlkF_Wwof'
-Copying `/usr/lib/x86_64-linux-gnu/hwloc/hwloc_xml_libxml.so'  to `/home/ls2716/cwHPC/initial.er/archives/hwloc_xml_libxml.so_IicRzkXVc9a'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_routed_binomial.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_routed_binomial.so_c125S9HKbgb'
-Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_dfs_orted.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_dfs_orted.so_c125S9HKbgb'
