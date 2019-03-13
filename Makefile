@@ -39,10 +39,10 @@ cleaner:
 all: diff advx advy burg clean
 
 padvx: compile
-	collect -o initial.er mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0 0 0 4 4
+	collect -o initial3.er mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0 0 0 4 4
 
 anadvx: padvx 
-	analyzer initial.er
+	analyzer initial3.er
 
 ANadvx: anadvx cleaner
 	

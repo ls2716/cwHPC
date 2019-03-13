@@ -1,0 +1,4 @@
+### Start Wed Mar 13 16:04:49 2019
+# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial2.er/_x12.er/er_archive.log /home/ls2716/cwHPC/initial2.er/_x12.er
+Copying `/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1'  to `/home/ls2716/cwHPC/initial2.er/archives/libpciaccess.so.0.11.1_dnWuQRcLhw9'
+Copying `/lib/x86_64-linux-gnu/liblzma.so.5.2.2'  to `/home/ls2716/cwHPC/initial2.er/archives/liblzma.so.5.2.2_XLwlkF_Wwof'

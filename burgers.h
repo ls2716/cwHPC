@@ -19,7 +19,10 @@ public:
 	void Integrate();
 	void WrapUp();
 	void Energy();
-
+	
+	//Chacking speed
+	bool Bon = false;
+	
 
 private:
 
@@ -42,6 +45,10 @@ private:
 	double* vgrid_l_vertB;
 	double* vgrid_r_vertB;
 	//Own boundaries to send
+	double* ugrid_myt_horB;
+	double* ugrid_myb_horB;
+	double* vgrid_myt_horB;
+	double* vgrid_myb_horB;
 	double* ugrid_myl_vertB;
 	double* ugrid_myr_vertB;
 	double* vgrid_myr_vertB;
@@ -61,7 +68,9 @@ private:
     //Methods for performing simulation
 	void NextStep();
     void BoundaryUpdate();
+	void BoundaryUpdate2();
     void CalculateMyBoundaries();
+	void CalculateMyBoundaries2();
     void CalculateCorners();
     void CalculateCenter();
 

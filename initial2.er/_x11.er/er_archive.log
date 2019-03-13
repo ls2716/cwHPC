@@ -1,0 +1,9 @@
+### Start Wed Mar 13 16:04:49 2019
+# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial2.er/_x11.er/er_archive.log /home/ls2716/cwHPC/initial2.er/_x11.er
+Copying `/usr/lib/x86_64-linux-gnu/libhwloc.so.5.7.2'  to `/home/ls2716/cwHPC/initial2.er/archives/libhwloc.so.5.7.2_dnWuQRcLhw9'
+Copying `/lib/x86_64-linux-gnu/libdl-2.24.so'  to `/home/ls2716/cwHPC/initial2.er/archives/libdl-2.24.so_XLwlkF_Wwof'
+Copying `/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.22'  to `/home/ls2716/cwHPC/initial2.er/archives/libstdc++.so.6.0.22_dnWuQRcLhw9'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_shmem_mmap.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_shmem_mmap.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_ess_pmi.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_ess_pmi.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_state_tool.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_state_tool.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_dfs_orted.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_dfs_orted.so_c125S9HKbgb'

@@ -82,7 +82,37 @@ Burgers::Burgers(Model& m)
 //Need to release the memory
 Burgers::~Burgers()
 {
+	if (Bon){
+//		cout<<"Entered destructor"<<endl;
     delete[] ugrid_o;
+//	delete[] vgrid_o;
+	delete[] ugrid_e;
+//	delete[] vgrid_e;
+	delete[] ugrid_t_horB;
+	delete[] ugrid_b_horB;
+//	delete[] vgrid_t_horB;
+//	delete[] vgrid_b_horB;
+	delete[] ugrid_l_vertB;
+	delete[] ugrid_r_vertB;
+//	delete[] vgrid_l_vertB;
+//	delete[] vgrid_r_vertB;
+	delete[] ugrid_myl_vertB;
+	delete[] ugrid_myr_vertB;
+//	delete[] vgrid_myr_vertB;
+//	delete[] vgrid_myl_vertB;
+	delete[] ugrid_myt_horB;
+	delete[] ugrid_myb_horB;
+//	cout<<"Finished destructor"<<endl;
+//	MPI_Barrier(MPI_COMM_WORLD);
+	}
+	if (my_rank==0)
+    {
+//        delete[] full_ugrid;
+//        delete[] full_vgrid;
+    }
+	if (!Bon) {
+//		cout<<"Eneterd another"<<endl;
+	delete[] ugrid_o;
 	delete[] vgrid_o;
 	delete[] ugrid_e;
 	delete[] vgrid_e;
@@ -98,11 +128,10 @@ Burgers::~Burgers()
 	delete[] ugrid_myr_vertB;
 	delete[] vgrid_myr_vertB;
 	delete[] vgrid_myl_vertB;
-	if (my_rank==0)
-    {
-        delete[] full_ugrid;
-        delete[] full_vgrid;
-    }
+	delete[] ugrid_myt_horB;
+	delete[] ugrid_myb_horB;
+	}
+
 };
 
 
@@ -116,7 +145,30 @@ Burgers::~Burgers()
 */
 void Burgers::Initialize()
 {
-
+	if (Bon){
+	my_size = my_Ny*my_Nx;
+	ugrid_o = new double[my_size*2];
+	vgrid_o = &ugrid_o[my_size];
+	ugrid_e = new double[my_size*2];
+	vgrid_e = &ugrid_e[my_size];
+	ugrid_t_horB = new double[my_Nx*2];
+	vgrid_t_horB = &ugrid_t_horB[my_Nx];
+    ugrid_b_horB = new double[my_Nx*2];
+	vgrid_b_horB = &ugrid_b_horB[my_Nx];
+	ugrid_l_vertB = new double[my_Ny*2];
+	vgrid_l_vertB = &ugrid_l_vertB[my_Ny];
+	ugrid_r_vertB = new double[my_Ny*2];
+	vgrid_r_vertB = &ugrid_r_vertB[my_Ny];
+	ugrid_myl_vertB = new double[my_Ny*2];
+	vgrid_myl_vertB = &ugrid_myl_vertB[my_Ny];
+	ugrid_myr_vertB = new double[my_Ny*2];
+	vgrid_myr_vertB = &ugrid_myr_vertB[my_Ny];
+	ugrid_myt_horB = new double[my_Nx*2];
+	vgrid_myt_horB = &ugrid_myt_horB[my_Nx];
+	ugrid_myb_horB = new double[my_Nx*2];
+	vgrid_myb_horB = &ugrid_myb_horB[my_Nx];
+	}
+	else{
 	my_size = my_Ny*my_Nx;
 	ugrid_o = new double[my_size];
 	vgrid_o = new double[my_size];
@@ -127,13 +179,18 @@ void Burgers::Initialize()
     ugrid_b_horB = new double[my_Nx];
     vgrid_b_horB = new double[my_Nx];
 	ugrid_l_vertB = new double[my_Ny];
-	ugrid_r_vertB = new double[my_Ny];
 	vgrid_l_vertB = new double[my_Ny];
+	ugrid_r_vertB = new double[my_Ny];
 	vgrid_r_vertB = new double[my_Ny];
 	ugrid_myl_vertB = new double[my_Ny];
-	ugrid_myr_vertB = new double[my_Ny];
 	vgrid_myr_vertB = new double[my_Ny];
+	ugrid_myr_vertB = new double[my_Ny];
 	vgrid_myl_vertB = new double[my_Ny];
+	ugrid_myt_horB = new double[my_Nx];
+	vgrid_myt_horB = new double[my_Nx];
+	ugrid_myb_horB = new double[my_Nx];
+	vgrid_myb_horB = new double[my_Nx];
+	}
 	vgrid_out = vgrid_e;
 	ugrid_out = ugrid_e;
 
@@ -170,6 +227,49 @@ void Burgers::Initialize()
 	cout << "Grid successfully initialized" <<endl;
 }
 
+
+void Burgers::BoundaryUpdate2()
+{
+    Bcounter=0;
+    if (downB)
+    {
+        ierr=MPI_Isend(ugrid_myb_horB,my_Nx*2,MPI_DOUBLE, my_rank-Px,4,MPI_COMM_WORLD,&send_request[Bcounter]);
+        ierr=MPI_Irecv(ugrid_b_horB,my_Nx*2,MPI_DOUBLE,my_rank-Px,6,MPI_COMM_WORLD,&recv_request[Bcounter]);
+        Bcounter++;
+//        ierr=MPI_Isend(&vgrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,6,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(vgrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,4,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+
+    }
+    if (upB)
+    {
+        ierr=MPI_Isend(ugrid_myt_horB,my_Nx*2,MPI_DOUBLE, my_rank+Px,6,MPI_COMM_WORLD,&send_request[Bcounter]);
+        ierr=MPI_Irecv(ugrid_t_horB,my_Nx*2,MPI_DOUBLE,my_rank+Px,4,MPI_COMM_WORLD,&recv_request[Bcounter]);
+        Bcounter++;
+
+    }
+    if (leftB)
+    {
+        ierr=MPI_Isend(ugrid_myl_vertB,my_Ny*2,MPI_DOUBLE, my_rank-1,1,MPI_COMM_WORLD,&send_request[Bcounter]);
+        ierr=MPI_Irecv(ugrid_l_vertB,my_Ny*2,MPI_DOUBLE,my_rank-1,3,MPI_COMM_WORLD,&recv_request[Bcounter]);
+        Bcounter++;
+//        ierr=MPI_Isend(vgrid_myl_vertB,my_Ny,MPI_DOUBLE, my_rank-1,5,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(vgrid_l_vertB,my_Ny,MPI_DOUBLE,my_rank-1,7,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+    }
+    if (rightB)
+    {
+        ierr=MPI_Isend(ugrid_myr_vertB,my_Ny*2,MPI_DOUBLE, my_rank+1,3,MPI_COMM_WORLD,&send_request[Bcounter]);
+        ierr=MPI_Irecv(ugrid_r_vertB,my_Ny*2,MPI_DOUBLE,my_rank+1,1,MPI_COMM_WORLD,&recv_request[Bcounter]);
+        Bcounter++;
+//        ierr=MPI_Isend(vgrid_myr_vertB,my_Ny,MPI_DOUBLE, my_rank+1,7,MPI_COMM_WORLD,&send_request[Bcounter]);
+//        ierr=MPI_Irecv(vgrid_r_vertB,my_Ny,MPI_DOUBLE,my_rank+1,5,MPI_COMM_WORLD,&recv_request[Bcounter]);
+//        Bcounter++;
+    }
+    ierr=MPI_Waitall(Bcounter,send_request,status);
+    ierr=MPI_Waitall(Bcounter,recv_request,status);
+}
+//
 void Burgers::BoundaryUpdate()
 {
     Bcounter=0;
@@ -214,53 +314,6 @@ void Burgers::BoundaryUpdate()
     ierr=MPI_Waitall(Bcounter,send_request,status);
     ierr=MPI_Waitall(Bcounter,recv_request,status);
 }
-//
-//void Burgers::BoundaryUpdateFast()
-//{
-//    Bcounter=0;
-//    if (downB)
-//    {
-//        ierr=MPI_Isend(&ugrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,2,MPI_COMM_WORLD,&send_request[Bcounter]);
-//        ierr=MPI_Irecv(ugrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,0,MPI_COMM_WORLD,&recv_request[Bcounter]);
-//        Bcounter++;
-//        ierr=MPI_Isend(&vgrid_in[0],my_Nx,MPI_DOUBLE, my_rank-Px,6,MPI_COMM_WORLD,&send_request[Bcounter]);
-//        ierr=MPI_Irecv(vgrid_b_horB,my_Nx,MPI_DOUBLE,my_rank-Px,4,MPI_COMM_WORLD,&recv_request[Bcounter]);
-//        Bcounter++;
-//
-//    }
-//    if (upB)
-//    {
-//        ierr=MPI_Isend(&ugrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,0,MPI_COMM_WORLD,&send_request[Bcounter]);
-//        ierr=MPI_Irecv(ugrid_t_horB,my_Nx,MPI_DOUBLE,my_rank+Px,2,MPI_COMM_WORLD,&recv_request[Bcounter]);
-//        Bcounter++;
-//        ierr=MPI_Isend(&vgrid_in[smy_Ny*my_Nx],my_Nx,MPI_DOUBLE, my_rank+Px,4,MPI_COMM_WORLD,&send_request[Bcounter]);
-//        ierr=MPI_Irecv(vgrid_t_horB,my_Nx,MPI_DOUBLE,my_rank+Px,6,MPI_COMM_WORLD,&recv_request[Bcounter]);
-//        Bcounter++;
-//
-//    }
-//    if (leftB)
-//    {
-//        ierr=MPI_Isend(ugrid_myl_vertB,my_Ny,MPI_DOUBLE, my_rank-1,1,MPI_COMM_WORLD,&send_request[Bcounter]);
-//        ierr=MPI_Irecv(ugrid_l_vertB,my_Ny,MPI_DOUBLE,my_rank-1,3,MPI_COMM_WORLD,&recv_request[Bcounter]);
-//        Bcounter++;
-//        ierr=MPI_Isend(vgrid_myl_vertB,my_Ny,MPI_DOUBLE, my_rank-1,5,MPI_COMM_WORLD,&send_request[Bcounter]);
-//        ierr=MPI_Irecv(vgrid_l_vertB,my_Ny,MPI_DOUBLE,my_rank-1,7,MPI_COMM_WORLD,&recv_request[Bcounter]);
-//        Bcounter++;
-//    }
-//    if (rightB)
-//    {
-//        ierr=MPI_Isend(ugrid_myr_vertB,my_Ny,MPI_DOUBLE, my_rank+1,3,MPI_COMM_WORLD,&send_request[Bcounter]);
-//        ierr=MPI_Irecv(ugrid_r_vertB,my_Ny,MPI_DOUBLE,my_rank+1,1,MPI_COMM_WORLD,&recv_request[Bcounter]);
-//        Bcounter++;
-//        ierr=MPI_Isend(vgrid_myr_vertB,my_Ny,MPI_DOUBLE, my_rank+1,7,MPI_COMM_WORLD,&send_request[Bcounter]);
-//        ierr=MPI_Irecv(vgrid_r_vertB,my_Ny,MPI_DOUBLE,my_rank+1,5,MPI_COMM_WORLD,&recv_request[Bcounter]);
-//        Bcounter++;
-//    }
-//    ierr=MPI_Waitall(Bcounter,send_request,status);
-//    ierr=MPI_Waitall(Bcounter,recv_request,status);
-//}
-
-
 
 
 //Calculating boundaries of own subdomain - needs to be done separately because it takes the values from specific arrays
@@ -270,16 +323,16 @@ void Burgers::CalculateMyBoundaries()
     {
         for (int i=1;i<(smy_Nx);i++)
         {
-            ugrid_out[i] = Cij*ugrid_in[i]+Cinj*ugrid_in[i-1]+Cipj*ugrid_in[i+1]+Cijp*ugrid_in[i+my_Nx]+Cijn*ugrid_b_horB[i]+Cbx*ugrid_in[i]*(ugrid_in[i-1]-ugrid_in[i])+Cby*vgrid_in[i]*(ugrid_b_horB[i]-ugrid_in[i]);
-            vgrid_out[i] = Cij*vgrid_in[i]+Cinj*vgrid_in[i-1]+Cipj*vgrid_in[i+1]+Cijp*vgrid_in[i+my_Nx]+Cijn*vgrid_b_horB[i]+Cbx*ugrid_in[i]*(vgrid_in[i-1]-vgrid_in[i])+Cby*vgrid_in[i]*(vgrid_b_horB[i]-vgrid_in[i]);
+            ugrid_out[i]  = Cij*ugrid_in[i]+Cinj*ugrid_in[i-1]+Cipj*ugrid_in[i+1]+Cijp*ugrid_in[i+my_Nx]+Cijn*ugrid_b_horB[i]+Cbx*ugrid_in[i]*(ugrid_in[i-1]-ugrid_in[i])+Cby*vgrid_in[i]*(ugrid_b_horB[i]-ugrid_in[i]);
+            vgrid_out[i]  = Cij*vgrid_in[i]+Cinj*vgrid_in[i-1]+Cipj*vgrid_in[i+1]+Cijp*vgrid_in[i+my_Nx]+Cijn*vgrid_b_horB[i]+Cbx*ugrid_in[i]*(vgrid_in[i-1]-vgrid_in[i])+Cby*vgrid_in[i]*(vgrid_b_horB[i]-vgrid_in[i]);
         }
     }
     else
     {
         for (int i=1;i<(smy_Nx);i++)
         {
-            ugrid_out[i] = Cij*ugrid_in[i]+Cinj*ugrid_in[i-1]+Cipj*ugrid_in[i+1]+Cijp*ugrid_in[i+my_Nx]+Cbx*ugrid_in[i]*(ugrid_in[i-1]-ugrid_in[i])+Cby*vgrid_in[i]*(-ugrid_in[i]);
-            vgrid_out[i] = Cij*vgrid_in[i]+Cinj*vgrid_in[i-1]+Cipj*vgrid_in[i+1]+Cijp*vgrid_in[i+my_Nx]+Cbx*ugrid_in[i]*(vgrid_in[i-1]-vgrid_in[i])+Cby*vgrid_in[i]*(-vgrid_in[i]);
+            ugrid_out[i]  = Cij*ugrid_in[i]+Cinj*ugrid_in[i-1]+Cipj*ugrid_in[i+1]+Cijp*ugrid_in[i+my_Nx]+Cbx*ugrid_in[i]*(ugrid_in[i-1]-ugrid_in[i])+Cby*vgrid_in[i]*(-ugrid_in[i]);
+            vgrid_out[i]  = Cij*vgrid_in[i]+Cinj*vgrid_in[i-1]+Cipj*vgrid_in[i+1]+Cijp*vgrid_in[i+my_Nx]+Cbx*ugrid_in[i]*(vgrid_in[i-1]-vgrid_in[i])+Cby*vgrid_in[i]*(-vgrid_in[i]);
         }
     }
 
@@ -291,8 +344,8 @@ void Burgers::CalculateMyBoundaries()
         vout_pointer = &vgrid_out[my_Nx*(smy_Ny)];
         for (int i=1;i<(smy_Nx);i++)
         {
-            uout_pointer[i] = Cij*urob_pointer[i]+Cinj*urob_pointer[i-1]+Cipj*urob_pointer[i+1]+Cijp*ugrid_t_horB[i]+Cijn*urob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(urob_pointer[i-1]-urob_pointer[i])+Cby*vrob_pointer[i]*(urob_pointer[i-my_Nx]-urob_pointer[i]);
-            vout_pointer[i] = Cij*vrob_pointer[i]+Cinj*vrob_pointer[i-1]+Cipj*vrob_pointer[i+1]+Cijp*vgrid_t_horB[i]+Cijn*vrob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(vrob_pointer[i-1]-vrob_pointer[i])+Cby*vrob_pointer[i]*(vrob_pointer[i-my_Nx]-vrob_pointer[i]);
+            uout_pointer[i] =Cij*urob_pointer[i]+Cinj*urob_pointer[i-1]+Cipj*urob_pointer[i+1]+Cijp*ugrid_t_horB[i]+Cijn*urob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(urob_pointer[i-1]-urob_pointer[i])+Cby*vrob_pointer[i]*(urob_pointer[i-my_Nx]-urob_pointer[i]);
+            vout_pointer[i]  = Cij*vrob_pointer[i]+Cinj*vrob_pointer[i-1]+Cipj*vrob_pointer[i+1]+Cijp*vgrid_t_horB[i]+Cijn*vrob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(vrob_pointer[i-1]-vrob_pointer[i])+Cby*vrob_pointer[i]*(vrob_pointer[i-my_Nx]-vrob_pointer[i]);
         }
     }
     else
@@ -303,8 +356,90 @@ void Burgers::CalculateMyBoundaries()
         vout_pointer = &vgrid_out[my_Nx*(smy_Ny)];
         for (int i=1;i<(smy_Nx);i++)
         {
-            uout_pointer[i] = Cij*urob_pointer[i]+Cinj*urob_pointer[i-1]+Cipj*urob_pointer[i+1]+Cijn*urob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(urob_pointer[i-1]-urob_pointer[i])+Cby*vrob_pointer[i]*(urob_pointer[i-my_Nx]-urob_pointer[i]);
-            vout_pointer[i] = Cij*vrob_pointer[i]+Cinj*vrob_pointer[i-1]+Cipj*vrob_pointer[i+1]+Cijn*vrob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(vrob_pointer[i-1]-vrob_pointer[i])+Cby*vrob_pointer[i]*(vrob_pointer[i-my_Nx]-vrob_pointer[i]);
+            uout_pointer[i]  = Cij*urob_pointer[i]+Cinj*urob_pointer[i-1]+Cipj*urob_pointer[i+1]+Cijn*urob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(urob_pointer[i-1]-urob_pointer[i])+Cby*vrob_pointer[i]*(urob_pointer[i-my_Nx]-urob_pointer[i]);
+            vout_pointer[i]  = Cij*vrob_pointer[i]+Cinj*vrob_pointer[i-1]+Cipj*vrob_pointer[i+1]+Cijn*vrob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(vrob_pointer[i-1]-vrob_pointer[i])+Cby*vrob_pointer[i]*(vrob_pointer[i-my_Nx]-vrob_pointer[i]);
+        }
+    }
+    if (leftB) //Left boundary
+    {
+        for (int j=1;j<(smy_Ny);j++)
+        {
+            j_offset = j*my_Nx;
+            ugrid_out[j_offset] = ugrid_myl_vertB[j] = Cij*ugrid_in[j_offset]+Cinj*ugrid_l_vertB[j]+Cipj*ugrid_in[j_offset+1]+Cijp*ugrid_in[j_offset+my_Nx]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_l_vertB[j]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
+            vgrid_out[j_offset] = vgrid_myl_vertB[j] = Cij*vgrid_in[j_offset]+Cinj*vgrid_l_vertB[j]+Cipj*vgrid_in[j_offset+1]+Cijp*vgrid_in[j_offset+my_Nx]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_l_vertB[j]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
+        }
+    }
+    else
+    {
+        for (int j=1;j<(smy_Ny);j++)
+        {
+            j_offset = j*my_Nx;
+            ugrid_out[j_offset] = ugrid_myl_vertB[j] = Cij*ugrid_in[j_offset]+Cipj*ugrid_in[j_offset+1]+Cijp*ugrid_in[j_offset+my_Nx]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
+            vgrid_out[j_offset] = vgrid_myl_vertB[j] = Cij*vgrid_in[j_offset]+Cipj*vgrid_in[j_offset+1]+Cijp*vgrid_in[j_offset+my_Nx]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
+        }
+    }
+    if (rightB) //Right boundary
+    {
+        for (int j=1;j<smy_Ny;j++)
+        {
+            j_offset = j*my_Nx+smy_Nx;
+            ugrid_out[j_offset] = ugrid_myr_vertB[j] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cipj*ugrid_r_vertB[j]+Cijp*ugrid_in[j_offset+my_Nx]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
+            vgrid_out[j_offset] = vgrid_myr_vertB[j] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cipj*vgrid_r_vertB[j]+Cijp*vgrid_in[j_offset+my_Nx]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
+        }
+    }
+    else
+    {
+        for (int j=1;j<smy_Ny;j++)
+        {
+            j_offset = j*my_Nx+smy_Nx;
+            ugrid_out[j_offset] = ugrid_myr_vertB[j] = Cij*ugrid_in[j_offset]+Cinj*ugrid_in[j_offset-1]+Cijp*ugrid_in[j_offset+my_Nx]+Cijn*ugrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(ugrid_in[j_offset-1]-ugrid_in[j_offset])+Cby*vgrid_in[j_offset]*(ugrid_in[j_offset-my_Nx]-ugrid_in[j_offset]);
+            vgrid_out[j_offset] = vgrid_myr_vertB[j] = Cij*vgrid_in[j_offset]+Cinj*vgrid_in[j_offset-1]+Cijp*vgrid_in[j_offset+my_Nx]+Cijn*vgrid_in[j_offset-my_Nx]+Cbx*ugrid_in[j_offset]*(vgrid_in[j_offset-1]-vgrid_in[j_offset])+Cby*vgrid_in[j_offset]*(vgrid_in[j_offset-my_Nx]-vgrid_in[j_offset]);
+        }
+    }
+}
+
+//Calculating boundaries of own subdomain - needs to be done separately because it takes the values from specific arrays
+void Burgers::CalculateMyBoundaries2()
+{
+    if (downB) //Bottom boundary
+    {
+        for (int i=1;i<(smy_Nx);i++)
+        {
+            ugrid_out[i] = ugrid_myb_horB[i] = Cij*ugrid_in[i]+Cinj*ugrid_in[i-1]+Cipj*ugrid_in[i+1]+Cijp*ugrid_in[i+my_Nx]+Cijn*ugrid_b_horB[i]+Cbx*ugrid_in[i]*(ugrid_in[i-1]-ugrid_in[i])+Cby*vgrid_in[i]*(ugrid_b_horB[i]-ugrid_in[i]);
+            vgrid_out[i] = ugrid_myb_horB[i] = Cij*vgrid_in[i]+Cinj*vgrid_in[i-1]+Cipj*vgrid_in[i+1]+Cijp*vgrid_in[i+my_Nx]+Cijn*vgrid_b_horB[i]+Cbx*ugrid_in[i]*(vgrid_in[i-1]-vgrid_in[i])+Cby*vgrid_in[i]*(vgrid_b_horB[i]-vgrid_in[i]);
+        }
+    }
+    else
+    {
+        for (int i=1;i<(smy_Nx);i++)
+        {
+            ugrid_out[i] = ugrid_myb_horB[i] = Cij*ugrid_in[i]+Cinj*ugrid_in[i-1]+Cipj*ugrid_in[i+1]+Cijp*ugrid_in[i+my_Nx]+Cbx*ugrid_in[i]*(ugrid_in[i-1]-ugrid_in[i])+Cby*vgrid_in[i]*(-ugrid_in[i]);
+            vgrid_out[i] = ugrid_myb_horB[i] = Cij*vgrid_in[i]+Cinj*vgrid_in[i-1]+Cipj*vgrid_in[i+1]+Cijp*vgrid_in[i+my_Nx]+Cbx*ugrid_in[i]*(vgrid_in[i-1]-vgrid_in[i])+Cby*vgrid_in[i]*(-vgrid_in[i]);
+        }
+    }
+
+    if (upB)  //Top boundary
+    {
+        urob_pointer = &ugrid_in[my_Nx*(smy_Ny)];
+        vrob_pointer = &vgrid_in[my_Nx*(smy_Ny)];
+        uout_pointer = &ugrid_out[my_Nx*(smy_Ny)];
+        vout_pointer = &vgrid_out[my_Nx*(smy_Ny)];
+        for (int i=1;i<(smy_Nx);i++)
+        {
+            uout_pointer[i] = ugrid_myt_horB[i] =Cij*urob_pointer[i]+Cinj*urob_pointer[i-1]+Cipj*urob_pointer[i+1]+Cijp*ugrid_t_horB[i]+Cijn*urob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(urob_pointer[i-1]-urob_pointer[i])+Cby*vrob_pointer[i]*(urob_pointer[i-my_Nx]-urob_pointer[i]);
+            vout_pointer[i] = ugrid_myt_horB[i] = Cij*vrob_pointer[i]+Cinj*vrob_pointer[i-1]+Cipj*vrob_pointer[i+1]+Cijp*vgrid_t_horB[i]+Cijn*vrob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(vrob_pointer[i-1]-vrob_pointer[i])+Cby*vrob_pointer[i]*(vrob_pointer[i-my_Nx]-vrob_pointer[i]);
+        }
+    }
+    else
+    {
+        urob_pointer = &ugrid_in[my_Nx*(smy_Ny)];
+        vrob_pointer = &vgrid_in[my_Nx*(smy_Ny)];
+        uout_pointer = &ugrid_out[my_Nx*(smy_Ny)];
+        vout_pointer = &vgrid_out[my_Nx*(smy_Ny)];
+        for (int i=1;i<(smy_Nx);i++)
+        {
+            uout_pointer[i] = ugrid_myt_horB[i] = Cij*urob_pointer[i]+Cinj*urob_pointer[i-1]+Cipj*urob_pointer[i+1]+Cijn*urob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(urob_pointer[i-1]-urob_pointer[i])+Cby*vrob_pointer[i]*(urob_pointer[i-my_Nx]-urob_pointer[i]);
+            vout_pointer[i] = ugrid_myt_horB[i] = Cij*vrob_pointer[i]+Cinj*vrob_pointer[i-1]+Cipj*vrob_pointer[i+1]+Cijn*vrob_pointer[i-my_Nx]+Cbx*urob_pointer[i]*(vrob_pointer[i-1]-vrob_pointer[i])+Cby*vrob_pointer[i]*(vrob_pointer[i-my_Nx]-vrob_pointer[i]);
         }
     }
     if (leftB) //Left boundary
@@ -479,11 +614,18 @@ void Burgers::NextStep()
         vgrid_out=vgrid_o;
     }
     //Setting boundaries
-    BoundaryUpdate();
+
+	if (Bon)
+    BoundaryUpdate2();
+	else
+	BoundaryUpdate();
 	//Calculating corners
     CalculateCorners();
-	//Calculating boundaries
-    CalculateMyBoundaries();
+//	//Calculating boundaries
+	if (Bon)
+    CalculateMyBoundaries2();
+	else
+	CalculateMyBoundaries();
 	//Calculating inner points
     CalculateCenter();
 
@@ -520,6 +662,7 @@ void Burgers::Energy()
 void Burgers::Integrate()
 {
 	while (nt<Nt)
+//	while (nt<200)
 	{
         NextStep();
 	}

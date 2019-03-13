@@ -1,0 +1,16 @@
+### Start Wed Mar 13 15:57:12 2019
+# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial.er/_x5.er/er_archive.log /home/ls2716/cwHPC/initial.er/_x5.er
+Copying `/home/ls2716/cwHPC/my_prog'  to `/home/ls2716/cwHPC/initial.er/archives/my_prog_OUHIfGlSSM2'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/libopen-rte.so.20.1.0'  to `/home/ls2716/cwHPC/initial.er/archives/libopen-rte.so.20.1.0_G6zcWprHF51'
+Copying `/lib/x86_64-linux-gnu/librt-2.24.so'  to `/home/ls2716/cwHPC/initial.er/archives/librt-2.24.so_XLwlkF_Wwof'
+Copying `/lib/x86_64-linux-gnu/libc-2.24.so'  to `/home/ls2716/cwHPC/initial.er/archives/libc-2.24.so_XLwlkF_Wwof'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_shmem_mmap.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_shmem_mmap.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_ess_pmi.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_ess_pmi.so_c125S9HKbgb'
+Copying `/lib/x86_64-linux-gnu/libz.so.1.2.8'  to `/home/ls2716/cwHPC/initial.er/archives/libz.so.1.2.8_XLwlkF_Wwof'
+Copying `/usr/lib/x86_64-linux-gnu/libicudata.so.57.1'  to `/home/ls2716/cwHPC/initial.er/archives/libicudata.so.57.1_dnWuQRcLhw9'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_state_app.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_state_app.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_state_staged_orted.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_state_staged_orted.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_errmgr_default_app.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_errmgr_default_app.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.22.0'  to `/home/ls2716/cwHPC/initial.er/archives/libnl-route-3.so.200.22.0_dnWuQRcLhw9'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_bml_r2.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_bml_r2.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_btl_self.so'  to `/home/ls2716/cwHPC/initial.er/archives/mca_btl_self.so_c125S9HKbgb'

@@ -1,0 +1,8 @@
+### Start Wed Mar 13 16:31:18 2019
+# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial3.er/_x16.er/er_archive.log /home/ls2716/cwHPC/initial3.er/_x16.er
+Copying `/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0'  to `/home/ls2716/cwHPC/initial3.er/archives/libOpenCL.so.1.0.0_dnWuQRcLhw9'
+Copying `/usr/lib/x86_64-linux-gnu/hwloc/hwloc_xml_libxml.so'  to `/home/ls2716/cwHPC/initial3.er/archives/hwloc_xml_libxml.so_IicRzkXVc9a'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_state_novm.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_state_novm.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_btl_vader.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_btl_vader.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_mtl_ofi.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_mtl_ofi.so_c125S9HKbgb'
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_osc_rdma.so'  to `/home/ls2716/cwHPC/initial3.er/archives/mca_osc_rdma.so_c125S9HKbgb'

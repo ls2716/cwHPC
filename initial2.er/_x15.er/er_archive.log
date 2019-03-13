@@ -1,0 +1,3 @@
+### Start Wed Mar 13 16:04:49 2019
+# /apps/dev-studio/12.6/bin/../bin/er_archive -n -O /home/ls2716/cwHPC/initial2.er/_x15.er/er_archive.log /home/ls2716/cwHPC/initial2.er/_x15.er
+Copying `/usr/lib/x86_64-linux-gnu/openmpi/lib/openmpi/mca_allocator_basic.so'  to `/home/ls2716/cwHPC/initial2.er/archives/mca_allocator_basic.so_c125S9HKbgb'
