@@ -12,31 +12,52 @@ burgers.o: burgers.cpp burgers.h model.h
 compile: main.o  model.o burgers.o
 	mpicxx -o my_prog main.o  model.o burgers.o
 
-.PHONY: clean # Specify that ’clean’ is not a real file
-	target
-
-.PHONY: cleaner
-	target
-
 diff: compile
-	mpiexec -np 4 my_prog 1.0 10.0 21 21 4000 0 0 0 1 2 2
+	mpiexec -np 1 my_prog 1.0 10.0 2001 2001 4000 0 0 0 1 1 1
 
 advx: compile
-	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0 0 0 4 4
+	mpiexec -np 1 my_prog 1.0 10.0 2001 2001 4000 1 0 0 0 1 1
 
 advy: compile
-	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 0 1 0 0 4 4
+	mpiexec -np 1 my_prog 1.0 10.0 2001 2001 4000 0 1 0 0 1 1
 
 burg: compile
+	mpiexec -np 1 my_prog 1.0 10.0 2001 2001 4000 1 0.5 1 0.02 1 1
+
+diffp: compile
+	mpiexec -np 2 my_prog 1.0 10.0 21 21 4000 0 0 0 1 2 1
+
+advxp: compile
+	mpiexec -np 2 my_prog 1.0 10.0 2001 2001 4000 1 0 0 0 2 1
+
+advyp: compile
+	mpiexec -np 2 my_prog 1.0 10.0 2001 2001 4000 0 1 0 0 2 1
+
+burgp: compile
+	mpiexec -np 2 my_prog 1.0 10.0 2001 2001 4000 1 0.5 1 0.02 2 1
+	
+burgP: compile
 	mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0.5 1 0.02 4 4
+
+.PHONY: clean # Specify that ’clean’ is not a real file
+	target
 
 clean:
 	rm -f *.o my_prog   # Clean up (and ignore any errors)
 
+all: burgP clean
+
+
+
+
+
+#Below are not used so much
+
+.PHONY: cleaner
+	target
+	
 cleaner:
 	rm -r *.er
-
-all: diff advx advy burg clean
 
 padvx: compile
 	collect -o initial3.er mpiexec -np 16 my_prog 1.0 10.0 2001 2001 4000 1 0 0 0 4 4
@@ -54,3 +75,5 @@ avxComp:  avxTest.o
 
 avx: avxComp
 	mpiexec -np 1 avxProg
+
+

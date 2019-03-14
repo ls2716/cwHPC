@@ -671,8 +671,8 @@ void Burgers::Energy()
 //Intergrating
 void Burgers::Integrate()
 {
-//	while (nt<Nt)
-	while (nt<1)
+	while (nt<Nt)
+//	while (nt<1)
 	{
         NextStep();
 	}
@@ -710,8 +710,10 @@ void Burgers::WriteToFile()
 		file0.open("gridBon.txt", ios::out | ios::trunc);
 	else
 		file0.open("grid.txt", ios::out | ios::trunc);
-	cout.precision(3);
-//	cout << "Printing u" <<endl << endl;
+	cout.precision(7);
+	
+	file0<<energy<<endl;
+	
 	file0<<full_Nx<<"	"<<full_Ny<<endl;
 	for (int j=full_Ny-1; j>=0; j--)
 	{
@@ -719,9 +721,9 @@ void Burgers::WriteToFile()
 			file0 << fixed<<full_ugrid[i+j*full_Nx]<<"	";
 		file0 << full_ugrid[full_Nx-1+j*full_Nx]<<endl;
 	}
-//	cout << "Done printing u" << endl;
+
 	file0<<full_Nx<<"	"<<full_Ny<<endl;
-//	cout <<endl<<endl<< "Printing v" <<endl << endl;
+
 	for (int j=full_Ny-1; j>=0; j--)
 	{
 		for (int i=0; i<(full_Nx-1); i++)
@@ -729,7 +731,7 @@ void Burgers::WriteToFile()
 		file0 << full_vgrid[full_Nx-1+j*full_Nx]<<endl;
 	}
 	file0.close();
-	cout << "Done printing v" << endl;
+	cout << "Done printing to a file" << endl;
 }
 
 //Assembling full grid for final Energy calculation and writing to a file

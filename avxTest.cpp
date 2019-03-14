@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     hrc::time_point start = hrc::now();
 	__m256 result;
 	
-	for (int i=0; i<1000000000; i++)
+	for (int i=0; i<100000000; i++)
 	{
     /* Initialize the two argument vectors */
     __m256 evens = _mm256_set_ps(2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0);
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 
 	start = hrc::now();
 	double result2[8];
-	for (int i=0; i<1000000000; i++)
+	for (int i=0; i<100000000; i++)
 	{
     /* Initialize the two argument vectors */
     double evens[8] = {16.0,14.0,12.0,10.0,8.0,6.0,4.0,2.0};
