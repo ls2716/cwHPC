@@ -49,6 +49,9 @@ all: burgP clean
 
 
 
+burgcheck: compile
+	mpiexec -np 2 my_prog 1.0 10.0 21 21 4000 1 0.5 1 0.02 2 1
+
 
 
 #Below are not used so much
@@ -67,11 +70,11 @@ anadvx: padvx
 
 ANadvx: anadvx cleaner
 
-avxTest.o: avxTest.cpp
-	mpicxx -mavx -mavx2 -mfma -std=c++11 -Wall -o avxTest.o -c avxTest.cpp
+avxFun.o: avxFun.cpp
+	mpicxx -mavx -mavx2 -mfma -std=c++11 -Wall -o avxFun.o -c avxFun.cpp
 
-avxComp:  avxTest.o
-	mpicxx -o avxProg avxTest.o
+avxComp:  avxFun.o
+	mpicxx -o avxProg avxFun.o
 
 avx: avxComp
 	mpiexec -np 1 avxProg

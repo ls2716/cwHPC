@@ -660,7 +660,8 @@ void Burgers::Energy()
 			MPI_Recv(&m_energy, 1, MPI_DOUBLE, m, 10, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			energy+=m_energy;
 		}
-		cout << "Total Energy:  "<<(energy/2.0)<<endl;
+		energy=energy/2.0;
+		cout << "Total Energy:  "<<(energy)<<endl;
 	}
 	else
 	{
@@ -671,8 +672,8 @@ void Burgers::Energy()
 //Intergrating
 void Burgers::Integrate()
 {
-	while (nt<Nt)
-//	while (nt<1)
+//	while (nt<Nt)
+	while (nt<0)
 	{
         NextStep();
 	}
