@@ -783,7 +783,7 @@ void Burgers::Assemble()
 //			cout << "Still okay" << endl;
 			MPI_Recv(m_ugrid, m_size, MPI_DOUBLE, m, 4, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			MPI_Recv(m_vgrid, m_size, MPI_DOUBLE, m, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-//			cout << "Received everything from: "<<m << " i0: "<<m_i0<< " j0 "<<m_j0<<endl;
+			cout << "Received everything from: "<<m << " i0: "<<m_i0<< " j0 "<<m_j0<<endl;
 			//Assembling on the full grid
 			for (int j=0; j<m_Ny; j++)
 			{
@@ -795,7 +795,7 @@ void Burgers::Assemble()
 //					cout << "Condition asm "<< (i+m_i0) <<" " <<(j+m_j0)<<"  "<<((double)(m_i0+i)*dx-L/2) <<" "<<((double)(m_j0+j)*dy-L/2)<<endl;
 				}
 			}
-//			cout << "Assembled from: "<<m <<endl;
+			cout << "Assembled from: "<<m <<endl;
 		}
 //		cout<<"Still okay"<<endl;
 		delete[] m_ugrid;

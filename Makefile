@@ -70,11 +70,15 @@ anadvx: padvx
 
 ANadvx: anadvx cleaner
 
-avxFun.o: avxFun.cpp
+avxFun.o: avxFun.cpp avxFun.h
 	mpicxx -mavx -mavx2 -mfma -std=c++11 -Wall -o avxFun.o -c avxFun.cpp
+	
+avxMain.o: avxMain.cpp avxFun.h
+	mpicxx -mavx -mavx2 -mfma -std=c++11 -Wall -o avxMain.o -c avxMain.cpp
 
-avxComp:  avxFun.o
-	mpicxx -o avxProg avxFun.o
+
+avxComp: avxMain.o avxFun.o
+	mpicxx -o avxProg avxMain.o avxFun.o
 
 avx: avxComp
 	mpiexec -np 1 avxProg
