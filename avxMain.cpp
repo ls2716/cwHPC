@@ -20,6 +20,8 @@ int main()
 	double Cipj = 0.25;
 	double Cijp = 0.25;
 	double Cijn = 0.2;
+	double Cbx = 0.5;
+	double Cby = 0.5;
 	double* u = new double[Nx*Ny];
 	for (int i=0; i<Nx; i++)
 		for (int j=0; j<Ny; j++)
@@ -33,7 +35,7 @@ int main()
 		cout<<endl;
 	}
 	
-	avxFun a;
+	avxFun a(Cij,Cinj,Cipj,Cijn,Cijp,Cbx,Cby);
 	
 	
 	a.calculateSing(&u[2*Nx+4],&u[2*Nx+5],&u[2*Nx+3],&u[3*Nx+4],&u[1*Nx+4]);

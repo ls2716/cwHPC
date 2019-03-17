@@ -672,8 +672,8 @@ void Burgers::Energy()
 //Intergrating
 void Burgers::Integrate()
 {
-//	while (nt<Nt)
-	while (nt<0)
+	while (nt<Nt)
+//	while (nt<0)
 	{
         NextStep();
 	}

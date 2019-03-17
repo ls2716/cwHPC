@@ -10,7 +10,7 @@ burgers.o: burgers.cpp burgers.h model.h
 	mpicxx -std=c++11 -Wall -o burgers.o -c burgers.cpp
 
 compile: main.o  model.o burgers.o
-	mpicxx -o my_prog main.o  model.o burgers.o
+	mpicxx -o my_prog main.o  model.o burgers.o -O3 -ffast-math -funroll-loops  -march=native -ftree-vectorize
 
 diff: compile
 	mpiexec -np 1 my_prog 1.0 10.0 2001 2001 4000 0 0 0 1 1 1
