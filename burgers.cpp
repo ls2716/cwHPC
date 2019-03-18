@@ -36,6 +36,7 @@ Burgers::Burgers(Model& m)
     Cijp = c*dt/dy/dy;
     Cbx = b*dt/dx;
     Cby = b*dt/dy;
+	cout<<Cij<<endl<<Cinj<<endl<<Cipj<<endl<<Cijn<<endl<<Cijp<<endl;
 
     /* Inferring data about the subdomain grid
     / Partitioning so that if the grid is not divisible by Px or Py the subdomains span whole domain
@@ -604,10 +605,18 @@ void Burgers::CalculateCenter()
     }
 }
 
+
+void Burgers::CalculateCenter2(avxFun& a)
+{
+	
+    a.calculateMat(&ugrid_in[my_Nx+1],&ugrid_out[my_Nx+1],&vgrid_in[my_Nx+1],&vgrid_out[my_Nx+1],my_Nx,(my_Ny-2));
+}
+
 //Invoking Next Step
 void Burgers::NextStep()
 {
     nt++;
+	
     //Changing pointers
     if ((nt%2)==0)
     {
@@ -672,8 +681,9 @@ void Burgers::Energy()
 //Intergrating
 void Burgers::Integrate()
 {
+//	avxFun a(Cij,Cinj,Cipj,Cijn,Cijp,Cbx,Cby);
 	while (nt<Nt)
-//	while (nt<0)
+//	while (nt<1)
 	{
         NextStep();
 	}

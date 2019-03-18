@@ -29,6 +29,13 @@ int main()
 			u[j*Nx+i] = (double)i+ j*0.05;
 	
 	cout.precision(5);
+	double* v = new double[Nx*Ny];
+	double* vout = new double[Nx*Ny];
+	for (int i=0; i<Nx; i++)
+		for (int j=0; j<Ny; j++)
+			v[j*Nx+i] = (double)i+ j*0.05;
+	
+	cout.precision(5);
 	for (int j=Ny-1;j>=0;j--)
 	{
 		for (int i=0;i<Nx;i++)
@@ -40,9 +47,19 @@ int main()
 	
 	
 	a.calculateSing(&u[2*Nx+4],&u[2*Nx+5],&u[2*Nx+3],&u[3*Nx+4],&u[1*Nx+4]);
-	int doT = 2;
+	int nNy=Ny-2;
 	cout << "Dong other" <<endl;
-	a.calculateMat(&u[2*Nx+4],&uout[1*Nx+4],Nx,doT);
+	a.calculateMat(&u[1*Nx+1],&uout[1*Nx+1],&v[1*Nx+1],&vout[1*Nx+1],Nx,(nNy));
+	
+	cout<<endl<<"Printing uout"<<endl;
+	cout.precision(5);
+	for (int j=Ny-1;j>=0;j--)
+	{
+		for (int i=0;i<Nx;i++)
+			cout <<setw(8)<<fixed<<uout[j*Nx+i];
+		cout<<endl;
+	}
+	
 	
 	return 0;
 }

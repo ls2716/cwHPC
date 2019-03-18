@@ -6,6 +6,7 @@
 #include<iomanip>
 #include<fstream>
 #include<string>
+#include "avxFun.h"
 
 class Burgers {
 
@@ -73,10 +74,12 @@ private:
 	void CalculateMyBoundaries2();
     void CalculateCorners();
     void CalculateCenter();
+	void CalculateCenter2(avxFun& a);
 
     //Method for writing to a file
     void WriteToFile();
 
+	
 
     //Method for assembling full grid
 	void Assemble();
@@ -137,6 +140,9 @@ private:
     double Cijp;
     double Cbx;
     double Cby;
+	
+	
+	
 
     int nt; //current time step
 

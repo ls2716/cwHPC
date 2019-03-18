@@ -6,11 +6,12 @@ main.o: main.cpp
 model.o: model.cpp model.h
 	mpicxx -std=c++11 -Wall -o model.o -c model.cpp
 
-burgers.o: burgers.cpp burgers.h model.h
+burgers.o: burgers.cpp burgers.h model.h avxFun.h
 	mpicxx -std=c++11 -Wall -o burgers.o -c burgers.cpp
 
-compile: main.o  model.o burgers.o
-	mpicxx -o my_prog main.o  model.o burgers.o -O3 -ffast-math -funroll-loops  -march=native -ftree-vectorize
+compile: main.o  model.o burgers.o avxFun.o
+	mpicxx -o my_prog main.o  model.o burgers.o avxFun.o -O3 -ffast-math -funroll-loops  -march=native -ftree-vectorize
+	
 
 diff: compile
 	mpiexec -np 1 my_prog 1.0 10.0 2001 2001 4000 0 0 0 1 1 1
@@ -47,11 +48,14 @@ clean:
 
 all: burgP clean
 
-
+diffP: compile
+	mpiexec -np 36 my_prog 1.0 10.0 2001 2001 4000 0 0 0 1 6 6
 
 burgcheck: compile
 	mpiexec -np 2 my_prog 1.0 10.0 21 21 4000 1 0.5 1 0.02 2 1
 
+diffcheck: compile
+	mpiexec -np 2 my_prog 1.0 10.0 21 21 4000 0 0 0 1 2 1
 
 
 #Below are not used so much
