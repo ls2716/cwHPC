@@ -23,6 +23,7 @@ int main()
 	double Cbx = 0.5;
 	double Cby = 0.5;
 	double* u = new double[Nx*Ny];
+	double* uout = new double[Nx*Ny];
 	for (int i=0; i<Nx; i++)
 		for (int j=0; j<Ny; j++)
 			u[j*Nx+i] = (double)i+ j*0.05;
@@ -39,8 +40,9 @@ int main()
 	
 	
 	a.calculateSing(&u[2*Nx+4],&u[2*Nx+5],&u[2*Nx+3],&u[3*Nx+4],&u[1*Nx+4]);
-	
-	
+	int doT = 2;
+	cout << "Dong other" <<endl;
+	a.calculateMat(&u[2*Nx+4],&uout[1*Nx+4],Nx,doT);
 	
 	return 0;
 }

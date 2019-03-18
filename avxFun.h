@@ -18,6 +18,7 @@ public:
 	~avxFun(){};
 	
 	void calculateSing(double* uij, double *uipj, double* uinj, double* uijp, double* uijn);
+	void calculateMat(double* uij, double* uout, int& mNx, int& DoTimes);
 	
 	
 private:
@@ -31,7 +32,7 @@ private:
 	double Cijn;
 	double Cbx;
 	double Cby;
-	
+	double* f;
 	
 
 	
