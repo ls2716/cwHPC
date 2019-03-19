@@ -682,8 +682,8 @@ void Burgers::Energy()
 void Burgers::Integrate()
 {
 //	avxFun a(Cij,Cinj,Cipj,Cijn,Cijp,Cbx,Cby);
-	while (nt<Nt)
-//	while (nt<1)
+//	while (nt<Nt)
+	while (nt<100)
 	{
         NextStep();
 	}

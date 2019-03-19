@@ -52,7 +52,7 @@ diffP: compile
 	mpiexec -np 36 my_prog 1.0 10.0 2001 2001 4000 0 0 0 1 6 6
 
 burgcheck: compile
-	mpiexec -np 2 my_prog 1.0 10.0 21 21 4000 1 0.5 1 0.02 2 1
+	mpiexec -np 2 my_prog 1.0 10.0 2001 2001 4000 1 0.5 1 0.02 1 2
 
 diffcheck: compile
 	mpiexec -np 2 my_prog 1.0 10.0 21 21 4000 0 0 0 1 2 1
