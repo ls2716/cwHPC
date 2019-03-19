@@ -75,16 +75,6 @@ class Model {
         double ay;
         double b;
         double c;
-		double axf;
-		double ayf;
-		double bxf;
-		double byf;
-		double cxf;
-		double cyf;
-		double cxf2;
-		double cyf2;
-
-
 };
 
 #endif

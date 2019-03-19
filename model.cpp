@@ -2,11 +2,15 @@
 
 using namespace std;
 
-//Function to check validity
+/*Function to check validity in terms of whether simulation makes sense physically
+ * There are three possible outcomes:
+ * 1. Simulation is valid.
+ * 2. Simulation is not valid and cannot be run.
+ * 3. Simulation seems wrong and prompts user whether he wants to proceed.
+ */
 void Model::IsValidVal()
 {
     int def=0;
-    //Time cannot be negative or too big
     if (T<0)
     {
         cout << "Error. Final time cannot be negative." << endl;
@@ -67,7 +71,7 @@ void Model::IsValidVal()
     }
 }
 
-//Check if valid input - a float or an integer where applicable
+//Check if valid input - a floating point number or an integer where applicable
 void Model::IsValidInp(int argc, char* argv[])
 {
 	if (argc!=12)
@@ -75,7 +79,7 @@ void Model::IsValidInp(int argc, char* argv[])
 		cout<<"Not enough or too many parameters!"<<endl;
 		exit(EXIT_FAILURE);
 	}
-	//Regular expressions
+	//Regular expressions for int and float
 	regex integer("(\\+|-)?[[:digit:]]+");
 	regex floating("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?");
 	
@@ -143,7 +147,6 @@ void Model::ParameterFill()
 	dt=T/Nt;
 	dx=L/(Nx-1);
     dy=L/(Ny-1);
-	cout << "My rank: "<< my_rank << " I have filled my parameters." << endl;
 }
 
 //Printing parameters function
@@ -182,10 +185,6 @@ void Model::ParseParameters(int argc, char* argv[])
 	c = strtod(argv[9],NULL);
 	Px = strtol(argv[10],NULL,10);
 	Py = strtol(argv[11],NULL,10);
-
-
-//    cout << "My rank: "<< my_rank << " I have all inputs." << " My pos x: " << my_grid_pos_x << " My pos y: " << my_grid_pos_y<< " My Nx: " << my_Nx<< " My Ny: " << my_Ny<< endl;
-
 }
 
 
@@ -200,19 +199,18 @@ Model::Model(int argc, char* argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &P);
 
-	//Check if input is valid (actual integer or floating point number)
+    cout<< "Starting execution. - My rank = "<<my_rank <<endl;
+	
+		//Check if input is valid (actual integer or floating point number)
+	MPI_Barrier(MPI_COMM_WORLD);
 	if (my_rank==0)
 		IsValidInp(argc, argv);
 	MPI_Barrier(MPI_COMM_WORLD);
-    
-
-    cout << endl << "Starting execution. - My rank = "<<my_rank <<endl <<endl;
 
 	//Reading parameters
 	ParseParameters(argc, argv);
 
 	//Filling the rest of the parameters
-	cout << "My rank: "<<my_rank << " Filling rest of the parameters" << endl << endl;
 	ParameterFill();
 
 	//Checking if valid and asking if problems

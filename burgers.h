@@ -19,14 +19,11 @@ public:
 	void Integrate();
 	void WrapUp();
 	void Energy();
-	
-	//Chacking speed
-	bool Bon = false;
-	
+
 
 private:
 
-    /* The integration uses two grids to decrease the number of instructions.
+    /* The integration uses two grids to decrease the number of assignments.
     / Using calculation of dudt the integration would have to Go through the whole array twice.
     / Now the update is done in the same step as calculation of dudt.
     */
@@ -68,9 +65,7 @@ private:
     //Methods for performing simulation
 	void NextStep();
     void BoundaryUpdate();
-	void BoundaryUpdate2();
     void CalculateMyBoundaries();
-	void CalculateMyBoundaries2();
     void CalculateCorners();
     void CalculateCenter();
 
@@ -80,7 +75,6 @@ private:
 
     //Method for assembling full grid
 	void Assemble();
-	void Assemble2();
 
     //Same parameters as model has
     //Numerics global
@@ -130,13 +124,13 @@ private:
     double b;
     double c;
     //Faster calculations coefficients
-    double Cij;
-    double Cinj;
-    double Cipj;
-    double Cijn;
-    double Cijp;
-    double Cbx;
-    double Cby;
+    double Cij; 	//coefficient before u/v_{i,j}
+    double Cinj;	//coefficient before u/v_{i-1,j}
+    double Cipj; 	//coefficient before u/v_{i+1,j}
+    double Cijn; 	//coefficient before u/v_{i,j-1}
+    double Cijp; 	//coefficient before u/v_{i,j+1}
+    double Cbx; 	//coefficient before the non linear x term
+    double Cby;		//coefficient before the non linear y term
 
     int nt; //current time step
 
